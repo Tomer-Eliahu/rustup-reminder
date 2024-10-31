@@ -1,7 +1,7 @@
 {
   "name": "rustup-reminder",
   "displayName": "RustUp Reminder",
-  "description": "",
+  "description": "RustUp Reminder: Reminds you when a new stable version of Rust is out",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.95.0"
@@ -9,7 +9,7 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": ["onLanguage:rust"],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
