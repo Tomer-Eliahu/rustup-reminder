@@ -12,12 +12,33 @@
   "activationEvents": ["onLanguage:rust"],
   "main": "./out/extension.js",
   "contributes": {
+    
     "commands": [
       {
         "command": "rustup-reminder.helloWorld",
         "title": "Hello World"
       }
+    ],
+    "configuration": [{
+        "title": "RustUp Reminder",
+        "properties": {
+          "rustup-reminder.NotifyWhenUpToDate": {
+              "markdownDescription": "Whether to *also* notify you when your stable Rust version is up to date (sends out a notification that your stable Rust version is up to date). The default is to only notify you when there is an update available.",
+              "default": false,
+              "type": "boolean",
+              "order": 0
+          },
+          "rustup-reminder.UpdateWhenPossible": {
+              "markdownDescription": "Whether to automatically update your stable Rust version when an update is available. This is done by running 'rustup update -- stable' (updates the stable version and potentially rustup itself).",
+              "default": false,
+              "type": "boolean",
+              "order": 1
+          }
+      }
+      }
     ]
+    
+    
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
