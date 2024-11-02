@@ -2,6 +2,10 @@
 
 This is the README for your extension "rustup-reminder". After writing up a brief description, we recommend including the following sections.
 
+## Disclaimer
+
+This is a third-party extension that is *not* a part of rustup or associated with rustup.
+
 ## Features
 
 Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
@@ -37,7 +41,7 @@ Users appreciate release notes as you update your extension.
 
 ### 1.0.0
 
-Initial release of ...
+Initial release of RustUp Reminder.
 
 ### 1.0.1
 
