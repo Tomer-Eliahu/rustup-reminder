@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - functionality
+  schedule:
+    - cron: "0 6 * * 5"   # <=== If you want to change this value, this is helpful: https://crontab.guru .
+  
+  workflow_dispatch: #Enables manual run of this workflow
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout #Clones the repository to the runner
+      uses: actions/checkout@v4
+    - name: rustup toolchain install
+      uses: dtolnay/rust-toolchain@stable
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18.x
+    - run: npm install
+    - run: xvfb-run -a npm test
+      if: runner.os == 'Linux'
+    - run: npm test
+      if: runner.os != 'Linux'
