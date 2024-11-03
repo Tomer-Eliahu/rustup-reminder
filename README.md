@@ -2,9 +2,15 @@
 
 This is the README for your extension "rustup-reminder". After writing up a brief description, we recommend including the following sections.
 
+Runs once you first open a Rust file in a given VS code instance. Opening addiional files in the same VS code instance will *not* cause the extension to run again.
+
 ## Disclaimer
 
 This is a third-party extension that is *not* a part of rustup or associated with rustup.
+
+## Requirements
+
+If you have any requirements or dependencies, add a section describing those and how to install and configure them.
 
 ## Features
 
@@ -15,10 +21,6 @@ For example if there is an image subfolder under your extension project workspac
 \!\[feature X\]\(images/feature-x.png\)
 
 > Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
 
 ## Extension Settings
 
@@ -37,19 +39,10 @@ Calling out known issues can help limit users opening duplicate issues against y
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
-
 ### 1.0.0
 
 Initial release of RustUp Reminder.
 
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
 
 ---
 
