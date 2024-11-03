@@ -18,13 +18,13 @@
         "title": "RustUp Reminder",
         "properties": {
           "rustup-reminder.NotifyWhenUpToDate": {
-              "markdownDescription": "Whether to *also* notify you when your stable Rust version is up to date (sends out a notification that your stable Rust version is up to date). The default is to only notify you when there is an update available.",
+              "markdownDescription": "Whether to *also* notify you if your stable Rust version is up to date. The default is to only notify you if there is an update available.",
               "default": false,
               "type": "boolean",
               "order": 0
           },
           "rustup-reminder.UpdateWhenPossible": {
-              "markdownDescription": "Whether to automatically update your stable Rust version when an update is available. This is done by running 'rustup update -- stable' (updates the stable version and potentially rustup itself).",
+              "markdownDescription": "Whether to automatically update your stable Rust version when an update is available. This is done by running 'rustup update -- stable' (updates the stable version and potentially rustup itself). The default is to not auto-update.",
               "default": false,
               "type": "boolean",
               "order": 1
