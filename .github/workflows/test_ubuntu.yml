@@ -3,7 +3,6 @@ name: test_ubuntu
 on:
   workflow_dispatch: #Enables manual run of this workflow
 
-#fail-fast: false makes all jobs run to completion (otherwise if one job fails, then the rest are cancelled)
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,7 +22,7 @@ jobs:
       run: rustup check | Out-File -FilePath /tmp/TestRustUpReminderTempOutput.txt -Encoding utf8
     - shell: pwsh
       run: echo '
-          RustUpReminder rustup check command finished timstamp' | Out-File -FilePath /tmp/TestRustUpReminderTempOutput.txt -Encoding utf8 -Append
+          RustUpReminder rustup check command finished timestamp' | Out-File -FilePath /tmp/TestRustUpReminderTempOutput.txt -Encoding utf8 -Append
     - shell: pwsh
       run: |
           $text = Get-Content /tmp/TestRustUpReminderTempOutput.txt -Raw
