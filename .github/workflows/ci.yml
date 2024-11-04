@@ -10,6 +10,8 @@ on:
   
   workflow_dispatch: #Enables manual run of this workflow
 
+permissions: write-all #See if this enables my tests to create files
+
 jobs:
   build:
     strategy:
