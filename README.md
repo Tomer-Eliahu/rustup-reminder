@@ -13,7 +13,8 @@ This is a third-party extension. It is *not* a part of rustup or associated with
 
 ## Requirements
 
-Requires rustup to be installed.
+1. Requires rustup to be installed.
+2. Requires powershell to be installed.
 
 ## Extension Settings
 

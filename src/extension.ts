@@ -50,6 +50,10 @@ export function run() {
 		hideFromUser: true
 	});
 
+	//Changes the terminal to be powershell (if it was already powershell, this does nothing)
+	terminal.sendText("powershell");
+	sleep(1000);//We have to wait for the shell to change. Otherwise our following commands won't be executed
+
 	const TempDir = tmpdir();
 	
 	let FilePath ='';
@@ -208,6 +212,12 @@ export function run_debug()
 
 	//terminal.show(); //Uncomment for Debugging
 	
+	//Changes the terminal to be powershell (if it was already powershell, this does nothing)
+	terminal.sendText("powershell");
+	
+	sleep(1000);//We have to wait for the shell to change
+
+
 	const TempDir = tmpdir();
 
 		
