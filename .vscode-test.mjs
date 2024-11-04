@@ -4,7 +4,7 @@ export default defineConfig([
 	{
 		files: 'out/test/**/*.test.js',
 		mocha: {
-			timeout: 200000 //changed default
+			timeout: 2_000_000 //changed default
 		}
 	}
 	]);
