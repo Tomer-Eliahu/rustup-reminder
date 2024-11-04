@@ -53,12 +53,15 @@ export function run() {
 	//Changes the terminal to be powershell (if it was already powershell, it stays powershell)
 	if (process.platform === 'linux')
 	{
-		//on linux we need a different keyword
-		terminal.sendText("pwsh");
+		terminal.sendText("pwsh"); //on linux default shell we need a different keyword
+		sleep(1000);
+		terminal.sendText("powershell"); //we run this in case the user changed their default shell
 	}
 	else
 	{
 		terminal.sendText("powershell");
+		sleep(1000);
+		terminal.sendText("pwsh");
 	}
 	sleep(1000);//We have to wait for the shell to change. Otherwise our following commands won't be executed
 
@@ -226,12 +229,15 @@ export function run_debug()
 	//Changes the terminal to be powershell (if it was already powershell, it stays powershell)
 	if (process.platform === 'linux')
 	{
-		//on linux we need a different keyword
-		terminal.sendText("pwsh");
+		terminal.sendText("pwsh"); //on linux default shell we need a different keyword
+		sleep(1000);
+		terminal.sendText("powershell"); //we run this in case the user changed their default shell
 	}
 	else
 	{
 		terminal.sendText("powershell");
+		sleep(1000);
+		terminal.sendText("pwsh");
 	}
 	sleep(1000);//We have to wait for the shell to change. Otherwise our following commands won't be executed
 	
