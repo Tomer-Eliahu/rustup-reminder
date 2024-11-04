@@ -198,7 +198,7 @@ export function run() {
  */
 function sleep(wait_time: number) {
 
-	wait_time = wait_time * 2; //TO DO-- change this.  Temp test to see if this makes all CI tests pass
+	wait_time = wait_time * 5; //CI min wait time for tests to pass is 5_000 miliseconds
 
 	const intial_timestamp = Date.now();
 	let current_time = Date.now();
