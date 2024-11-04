@@ -10,8 +10,7 @@ on:
   
   workflow_dispatch: #Enables manual run of this workflow
 
-permissions: write-all #See if this enables my tests to create files
-
+#fail-fast: false makes all jobs run to completion (otherwise if one job fails, then the rest are cancelled)
 jobs:
   build:
     strategy:
