@@ -15,6 +15,7 @@ permissions: write-all #See if this enables my tests to create files
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
