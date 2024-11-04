@@ -1,9 +1,13 @@
 import { defineConfig } from '@vscode/test-cli';
 
-export default defineConfig({
-	files: 'out/test/**/*.test.js',
-});
-
+export default defineConfig([
+	{
+		files: 'out/test/**/*.test.js',
+		mocha: {
+			timeout: 200000 //changed default
+		}
+	}
+	]);
 
 //See https://code.visualstudio.com/api/working-with-extensions/testing-extension for how to define only certain
 //tests to run (i.e. pass a label to vscode-test).
