@@ -50,8 +50,16 @@ export function run() {
 		hideFromUser: true
 	});
 
-	//Changes the terminal to be powershell (if it was already powershell, this does nothing)
-	terminal.sendText("powershell");
+	//Changes the terminal to be powershell (if it was already powershell, it stays powershell)
+	if (process.platform === 'linux')
+	{
+		//on linux we need a different keyword
+		terminal.sendText("pwsh");
+	}
+	else
+	{
+		terminal.sendText("powershell");
+	}
 	sleep(1000);//We have to wait for the shell to change. Otherwise our following commands won't be executed
 
 	const TempDir = tmpdir();
@@ -214,12 +222,19 @@ export function run_debug()
 
 	//terminal.show(); //Uncomment for Debugging
 	
-	//Changes the terminal to be powershell (if it was already powershell, this does nothing)
-	terminal.sendText("powershell");
+
+	//Changes the terminal to be powershell (if it was already powershell, it stays powershell)
+	if (process.platform === 'linux')
+	{
+		//on linux we need a different keyword
+		terminal.sendText("pwsh");
+	}
+	else
+	{
+		terminal.sendText("powershell");
+	}
+	sleep(1000);//We have to wait for the shell to change. Otherwise our following commands won't be executed
 	
-	sleep(1000);//We have to wait for the shell to change
-
-
 	const TempDir = tmpdir();
 
 		

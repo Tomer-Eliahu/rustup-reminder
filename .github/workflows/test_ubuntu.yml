@@ -6,8 +6,6 @@ on:
 #fail-fast: false makes all jobs run to completion (otherwise if one job fails, then the rest are cancelled)
 jobs:
   build:
-    strategy:
-      fail-fast: false
     runs-on: ubuntu-latest
     steps:
     - name: Checkout #Clones the repository to the runner
@@ -20,7 +18,7 @@ jobs:
         node-version: 18.x
     - run: npm install
     - shell: pwsh
-      run: pwsh #Using powershell works on macOS but it doesn't for linux. Trying pwsh
+      run: pwsh #Using powershell works on macOS but it doesn't on linux. Trying pwsh -- Update: pwsh works!
     - shell: pwsh
       run: rustup check | Out-File -FilePath /tmp/TestRustUpReminderTempOutput.txt -Encoding utf8
     - shell: pwsh
@@ -30,6 +28,6 @@ jobs:
       run: |
           $text = Get-Content /tmp/TestRustUpReminderTempOutput.txt -Raw
           echo The result is $text
-    
-    #- run: xvfb-run -a npm test
-    #  if: runner.os == 'Linux'
+          
+    - run: xvfb-run -a npm test
+      if: runner.os == 'Linux'
