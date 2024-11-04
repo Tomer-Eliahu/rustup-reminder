@@ -51,7 +51,17 @@ export function run() {
 	});
 
 	const TempDir = tmpdir();
-	const FilePath= `${TempDir}\\RustUpReminderTempOutput.txt`;
+	
+	let FilePath ='';
+	//We need different filepaths depending if we are on Windows or not
+	if (process.platform === 'win32') //Note process.platform returns 'win32' even on 64-bit Windows systems
+	{
+		FilePath= `${TempDir}\\RustUpReminderTempOutput.txt`;
+	}
+	else
+	{
+	 	FilePath= `${TempDir}/RustUpReminderTempOutput.txt`;
+	}
 
 	//Writing rustup check output to a file is the only way we can retrieve it later
 	const write_command = `rustup check | Out-File -FilePath ${FilePath} -Encoding utf8`; 
@@ -199,12 +209,27 @@ export function run_debug()
 	//terminal.show(); //Uncomment for Debugging
 	
 	const TempDir = tmpdir();
+
+		
+	let FilePath ='';
 	
-	//TEST MODIFICATION
-	//Note I think these CI tests might be executed in parallel so we need a file for each
-	const FilePath= `${TempDir}\\TestRustUpReminderTempOutput.txt`;
+	//We need different filepaths depending if we are on Windows or not
+	if (process.platform === 'win32') //Note process.platform returns 'win32' even on 64-bit Windows systems
+	{
+		//TEST MODIFICATION
+		//Note I think these CI tests might be executed in parallel so we need a file for ea
+		FilePath= `${TempDir}\\TestRustUpReminderTempOutput.txt`;
+	}
+	else
+	{
+		//TEST MODIFICATION
+		//Note I think these CI tests might be executed in parallel so we need a file for each
+	 	FilePath= `${TempDir}/TestRustUpReminderTempOutput.txt`;
+	}
 	
-	
+	console.log(`This platform is ${process.platform}`);
+
+
 	const command = `echo 'the path to the temp file is ${FilePath}'`;
 	console.log(command);
 
