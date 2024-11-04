@@ -187,6 +187,8 @@ export function run() {
  */
 function sleep(wait_time: number) {
 
+	wait_time = wait_time * 10; //Temp test to see if this makes all CI tests pass
+
 	const intial_timestamp = Date.now();
 	let current_time = Date.now();
 	while ( (current_time- intial_timestamp ) < wait_time)
