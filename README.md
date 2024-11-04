@@ -24,6 +24,28 @@ This extension contributes the following settings:
 
 * `rustup-reminder.UpdateWhenPossible`: Whether to automatically update your stable Rust version when an update is available. This is done by running 'rustup update -- stable' (updates the stable version and potentially rustup itself). The default is to not auto-update.
 
+## Known Issues and Performance Tuning
+
+If the extension fails, you might need to set your default terminal profile to powershell. You can do this by running the VS code command **Terminal: Select Default Profile** or by changing the appopriate setting from the list below:
+* `terminal.integrated.defaultProfile.linux`
+
+* `terminal.integrated.defaultProfile.osx`
+
+* `terminal.integrated.defaultProfile.windows`
+
+### Performance Tuning
+
+If the extension still fails or if it works fine but you want it to be *as fast as possible* you can adjust the __ setting. The extension should roughly take 3 times that value to run. You can inspect the code on GitHub to see why this is needed.
+Follow the following steps:
+1. Set `rustup-reminder.NotifyWhenUpToDate` to on (just for now).
+
+2. Close and Reopen VS code. Then open a Rust file.
+
+3. If you see a non-error notification, then you are good to go!
+
+While the extension fails, increase the value.
+If you want to speed up the extension lower the value untill (just before) it fails.
+
 ## Release Notes
 
 ### 1.0.0
