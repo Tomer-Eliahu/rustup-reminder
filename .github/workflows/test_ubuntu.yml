@@ -19,8 +19,8 @@ jobs:
       with:
         node-version: 18.x
     - run: npm install
-    - shell: pwsh
-      run: powershell
+   # - shell: pwsh
+   #   run: powershell #This fails <-- Maybe try differnt name
     - shell: pwsh
       run: rustup check | Out-File -FilePath /tmp/TestRustUpReminderTempOutput.txt -Encoding utf8
     - shell: pwsh
