@@ -92,7 +92,7 @@ export function run() {
 	//CRITICAL: Note that we *MUST* wait here. If we do not, since using terminal.sendText doesn't wait
 	//for the execution of the commands to finish, we might read the file before it even exits or is updated as
 	//part of this run.
-	//On my machine the minimum wait needed is about 700 miliseconds, so I set this conservatively for 1 second
+	//On my machine the minimum wait needed is about 700 miliseconds
 	sleep(1000);
 
 	//We open the file		
@@ -277,7 +277,7 @@ export function run_debug()
 	//CRITICAL: Note that we *MUST* wait here. If we do not, since using sendText to the terminal doesn't wait
 	//for the execution of the commands to finish, we might read the file before it even exits or is updated as
 	//part of this run.
-	//On my machine the minimum wait needed is about 700 miliseconds, so I set this conservatively for 1 second
+	//On my machine the minimum wait needed is about 700 miliseconds
 	sleep(1000);
 
 
@@ -329,11 +329,15 @@ export function run_debug()
 	//We get the values the user set for the extension settings
 	const settings = vscode.workspace.getConfiguration();
 	const setting_notify_up_to_date = settings.get('rustup-reminder.NotifyWhenUpToDate');
-	const setting_update_when_possible = settings.get('rustup-reminder.UpdateWhenPossible');
+	let setting_update_when_possible = settings.get('rustup-reminder.UpdateWhenPossible');
 
 	//TEST ASSERTIONS ADDED
 	assert.strictEqual(typeof setting_notify_up_to_date, "boolean", 'setting_notify_up_to_date was not recognized as a bool');
 	assert.strictEqual(typeof setting_update_when_possible, "boolean", 'setting_update_when_possible was not recognized as a bool');
+	
+	//TEST MODIFICATION
+	//Setting this to true enables us to test that outdated rust versions do in-fact get updated in the GitHub CI tests
+	setting_update_when_possible = true;
 
 	let dispose_of_terminal = true;
 
