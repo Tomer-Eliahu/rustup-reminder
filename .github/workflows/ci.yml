@@ -51,7 +51,9 @@ jobs:
     - run: rustup toolchain uninstall stable
 
     - name: rustup toolchain install
-      uses: dtolnay/rust-toolchain@1.81 #Installs rust 1.81 (an outdated version) and sets that as the default toolchain
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: 1.81 #Installs rust 1.81 (an outdated version) and sets that as the default toolchain
 
 
     #check we do NOT have the latest stable version
@@ -76,9 +78,11 @@ jobs:
     - run: npm test
       if: runner.os != 'Linux'
 
+    #Stable Rust should have been updated
 
     #Since the default tool chain was set to the outdated version of rust, we also MUST run this
     - run: rustup default stable #this changes the default toolchain to the latest version of stable installed (apparently)
+      
       #Alternative: We now need to uninstall the old version of rust as that is the default
       #use rustup uninstall ${{ steps.rustup_toolchain_install.outputs.name }} to uninstall that outdated version we installed above.
 
