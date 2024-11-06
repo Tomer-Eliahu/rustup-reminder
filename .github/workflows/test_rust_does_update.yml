@@ -22,7 +22,9 @@ jobs:
     - name: rustup_toolchain_install
     # Installs the most recent stable toolchain as of the specified time
     # offset, which may be written in years, months, weeks, or days. Also sets that as the default toolchain
-      uses: dtolnay/rust-toolchain@1.81
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: 1.81
 
       #Run rustup check
     - shell: pwsh
