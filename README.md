@@ -38,6 +38,7 @@ If the extension fails, you might need to set your default terminal profile to P
 ### Performance Tuning
 
 If the extension still fails or if it works fine but you want it to be *as fast as possible* you can adjust the `rustup-reminder.Delay` setting. The extension should roughly take 3 times that value to run. You can inspect the code on GitHub to see why this is needed.
+
 Follow the following steps:
 1. Set `rustup-reminder.NotifyWhenUpToDate` to on (just for now).
 
@@ -46,7 +47,8 @@ Follow the following steps:
 3. If you see a non-error notification, then you are good to go!
 
 While the extension fails, increase the value.
-If you want to speed up the extension, lower the value until (just before) it fails.
+
+If you want to speed up the extension, lower the value until (just before) the extension fails.
 
 ## Release Notes
 

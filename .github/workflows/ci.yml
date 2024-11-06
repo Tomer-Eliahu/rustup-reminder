@@ -12,7 +12,7 @@ on:
 
 #fail-fast: false makes all jobs run to completion (otherwise if one job fails, then the rest are cancelled)
 jobs:
-  build:
+  build_up_to_date: #uses the latest stable version of Rust
     strategy:
       fail-fast: false
       matrix:
@@ -32,3 +32,52 @@ jobs:
       if: runner.os == 'Linux'
     - run: npm test
       if: runner.os != 'Linux'
+
+  build_out_of_date: #uses an outdated stable version of Rust AND checks rust stable is updated (since we set auto-update = true in one of the extension tests)
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    env: 
+      #We set these env variables at the JOB level (this makes them scoped at the JOB level)
+      INITIAL_RUST_VERSION: ''
+      UPDATED_RUST_VERSION: ''
+    steps:
+    - name: Checkout #Clones the repository to the runner
+      uses: actions/checkout@v4
+
+    - name: rustup toolchain install
+    # Installs the most recent stable toolchain as of the specified time
+    # offset, which may be written in years, months, weeks, or days.
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: stable 8 weeks ago
+
+    #LOG output of rustc --version and save it in env varaible
+    - name: set up env var that is the initial Rust version
+      run: echo "INITIAL_RUST_VERSION=$(echo rustc --version)" >> $GITHUB_ENV
+    - name: output the initial Rust version env var
+      run: echo The value of INITIAL_RUST_VERSION is ${{ env.INITIAL_RUST_VERSION }}
+      #alternative echo ${{ env.INITIAL_RUST_VERSION }}
+
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18.x
+    - run: npm install
+    - run: xvfb-run -a npm test
+      if: runner.os == 'Linux'
+    - run: npm test
+      if: runner.os != 'Linux'
+
+    #LOG output of rustc --version (that should now be different as rust should have been updated) and save it in env varaible
+    - name: set up env var that is the updated Rust version
+      run: echo "UPDATED_RUST_VERSION=$(echo rustc --version)" >> $GITHUB_ENV
+    - name: output the updated Rust version env var
+      run: echo The value of UPDATED_RUST_VERSION is ${{ env.UPDATED_RUST_VERSION }}
+
+
+    - name: check if rust was updated #Assert the env varaibles are not equal
+      if: ${{ INITIAL_RUST_VERSION }} == ${{ UPDATED_RUST_VERSION }}
+      run: exit 1 #causes the job to fail
