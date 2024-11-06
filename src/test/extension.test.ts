@@ -77,6 +77,21 @@ suite('Extension Test Suite', () => {
 		}
 
 		run_debug(sleep);
+
+		//Note since run_debug() potentially returns when stable rust is starting to update
+		//We need to wait here for rust to update so that all the GitHub CI tests pass
+		function wait_finish_upate(wait_time: number) {
+			const intial_timestamp = Date.now();
+			let current_time = Date.now();
+			while ( (current_time- intial_timestamp ) < wait_time)
+			{
+				current_time = Date.now();
+			}
+
+		}
+		wait_finish_upate(1000 * 60 * 5); //wait 5 minutes
+
+
 	});
 
 });
