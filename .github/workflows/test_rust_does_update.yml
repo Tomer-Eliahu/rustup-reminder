@@ -9,7 +9,7 @@ jobs:
       #We set these env variables at the JOB level (this makes them scoped at the JOB level)
       INITIAL_RUST_VERSION: ''
       UPDATED_RUST_VERSION: ''
-      
+      RUST_UPDATED: false
     runs-on: ubuntu-latest
     steps:
     - name: Checkout #Clones the repository to the runner
@@ -23,13 +23,12 @@ jobs:
     - name: rustup_toolchain_install
     # Installs the most recent stable toolchain as of the specified time
     # offset, which may be written in years, months, weeks, or days. Also sets that as the default toolchain
-    
       uses: dtolnay/rust-toolchain@master
       with:
         toolchain: stable 8 weeks ago
 
 
-      #check we do not have the latest stable version
+      #check we do NOT have the latest stable version
     - shell: pwsh
       run: rustup show
 
@@ -45,13 +44,16 @@ jobs:
       #Update rust
     - shell: pwsh
       run: rustup update -- stable
-
-      #We now need to uninstall the old version of rust as that was 
-      #rust default stable #see if this switches to the latest version of stable  ${{ steps.rustup_toolchain_install.outputs.name }}
       
       #Since the default tool chain was set to the outdated version of rust, we also need to run this
     - shell: pwsh
       run: rustup default stable #this changes the default toolchain to the latest version of stable installed (apparently)
+      #Alternative: We now need to uninstall the old version of rust as that is the default
+      #use rustup uninstall ${{ steps.rustup_toolchain_install.outputs.name }} to uninstall that outdated version we installed above.
+
+      #check default stable is now the latest version of stable
+    - shell: pwsh
+      run: rustup show
     
     #LOG output of rustc --version (that should now be different as rust should have been updated) and save it in env varaible
     - name: set up env var that is the updated Rust version
@@ -62,8 +64,15 @@ jobs:
       run: echo "The value of UPDATED_RUST_VERSION is ${{ env.UPDATED_RUST_VERSION }} "
 
 
-    - name: check if rust was updated #Assert the env varaibles are not equal
-      if: ${{ env.UPDATED_RUST_VERSION == env.UPDATED_RUST_VERSION }}
+    - name: check if rust was updated 
+      shell: bash
+      run: |
+        echo "INITIAL_RUST_VERSION=${{ env.UPDATED_RUST_VERSION == env.UPDATED_RUST_VERSION }}" >> $GITHUB_ENV
+        echo "The value of INITIAL_RUST_VERSION is ${{ env.RUST_UPDATED }} "
+    
+    - name: Assert the env varaibles are not equal
+      shell: bash
+      if: ${{ env.RUST_UPDATED }}
       run: exit 1 #causes the job to fail
       
  #old ${{ env.UPDATED_RUST_VERSION }} == ${{ env.UPDATED_RUST_VERSION }}
