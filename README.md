@@ -14,7 +14,7 @@ This is a third-party extension. It is *not* a part of rustup or associated with
 ## Requirements
 
 1. Requires rustup to be installed.
-2. Requires powershell to be installed.
+2. Requires PowerShell to be installed.
 
 ## Extension Settings
 
@@ -24,9 +24,11 @@ This extension contributes the following settings:
 
 * `rustup-reminder.UpdateWhenPossible`: Whether to automatically update your stable Rust version when an update is available. This is done by running 'rustup update -- stable' (updates the stable version and potentially rustup itself). The default is to not auto-update.
 
+* `rustup-reminder.Delay`: Delay in milliseconds after running terminal commands. This is necessary due to technical reasons. Default is 5000. See the Performance Tuning section below to learn more.
+
 ## Known Issues and Performance Tuning
 
-If the extension fails, you might need to set your default terminal profile to powershell. You can do this by running the VS code command **Terminal: Select Default Profile** or by changing the appopriate setting from the list below:
+If the extension fails, you might need to set your default terminal profile to PowerShell. You can do this by running the VS code command **Terminal: Select Default Profile** or by changing the appropriate setting from the list below:
 * `terminal.integrated.defaultProfile.linux`
 
 * `terminal.integrated.defaultProfile.osx`
@@ -35,7 +37,7 @@ If the extension fails, you might need to set your default terminal profile to p
 
 ### Performance Tuning
 
-If the extension still fails or if it works fine but you want it to be *as fast as possible* you can adjust the __ setting. The extension should roughly take 3 times that value to run. You can inspect the code on GitHub to see why this is needed.
+If the extension still fails or if it works fine but you want it to be *as fast as possible* you can adjust the `rustup-reminder.Delay` setting. The extension should roughly take 3 times that value to run. You can inspect the code on GitHub to see why this is needed.
 Follow the following steps:
 1. Set `rustup-reminder.NotifyWhenUpToDate` to on (just for now).
 
@@ -44,7 +46,7 @@ Follow the following steps:
 3. If you see a non-error notification, then you are good to go!
 
 While the extension fails, increase the value.
-If you want to speed up the extension lower the value untill (just before) it fails.
+If you want to speed up the extension, lower the value until (just before) it fails.
 
 ## Release Notes
 

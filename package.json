@@ -28,7 +28,13 @@
               "default": false,
               "type": "boolean",
               "order": 1
-          }
+          },
+          "rustup-reminder.Delay": {
+            "markdownDescription": "Delay in milliseconds after running terminal commands. This is necessary due to technical reasons. Default is 5000. See the Performance Tuning section in the extension description to learn more.",
+            "default": 5000,
+            "type": "number",
+            "order": 2
+        }
       }
       }
     ]

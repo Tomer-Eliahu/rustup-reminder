@@ -32,10 +32,28 @@ export function activate(context: vscode.ExtensionContext) {
 	//context.subscriptions.push(vscode.commands.registerCommand('rustup-reminder.helloWorld', () => {}));
 	
 
+
+	//Unfortunately, we need to get the wait_time value ahead of calling run. 
+	//This is because the GitHub CI tests require a longer wait time for them to pass.
+	const setting_wait_time:number = vscode.workspace.getConfiguration().get('rustup-reminder.Delay')??5000;
+
+	/**
+	 * blocks for setting_wait_time in miliseconds
+	 */
+	function sleep() {
+		const intial_timestamp = Date.now();
+		let current_time = Date.now();
+		while ( (current_time- intial_timestamp ) < setting_wait_time)
+		{
+			current_time = Date.now();
+		}
+
+	}
+	
 	//Run the extension logic.
 	//Doing things this way means we can automatically test the whole extension even if we update the
 	//contents of the run function!
-	run();
+	run(sleep);
 	
 }
 
@@ -43,7 +61,7 @@ export function activate(context: vscode.ExtensionContext) {
 /**
  * Runs RustUp Reminder
  */
-export function run() {
+export function run(sleep: () => void) {
 
 	const terminal = vscode.window.createTerminal({
 		name: `Ext Terminal rustup-reminder`,
@@ -54,16 +72,16 @@ export function run() {
 	if (process.platform === 'linux')
 	{
 		terminal.sendText("pwsh"); //on linux default shell we need a different keyword
-		sleep(1000);
+		sleep();
 		terminal.sendText("powershell"); //we run this in case the user changed their default shell
 	}
 	else
 	{
 		terminal.sendText("powershell");
-		sleep(1000);
+		sleep();
 		terminal.sendText("pwsh");
 	}
-	sleep(1000);//We have to wait for the shell to change. Otherwise our following commands won't be executed
+	sleep();//We have to wait for the shell to change. Otherwise our following commands won't be executed
 
 	const TempDir = tmpdir();
 	
@@ -93,7 +111,7 @@ export function run() {
 	//for the execution of the commands to finish, we might read the file before it even exits or is updated as
 	//part of this run.
 	//On my machine the minimum wait needed is about 700 miliseconds
-	sleep(1000);
+	sleep();
 
 	//We open the file		
 	const result = readFileSync(FilePath, { encoding: 'utf8', flag: 'r' }).trim(); //Note the trim here is important.
@@ -193,29 +211,13 @@ export function run() {
 	
 }
 
-/**
- * blocks for wait_time in miliseconds
- */
-function sleep(wait_time: number) {
-
-	wait_time = wait_time * 5; //CI min wait time for tests to pass is 5_000 miliseconds
-
-	const intial_timestamp = Date.now();
-	let current_time = Date.now();
-	while ( (current_time- intial_timestamp ) < wait_time)
-	{
-		current_time = Date.now();
-	}
-
-}
-
 
 // This method is called when your extension is deactivated
 export function deactivate() {}
 
 
 //For debugging purposes only (it is also used in a CI test)
-export function run_debug()
+export function run_debug(sleep: () => void)
 {
 
 	const terminal = vscode.window.createTerminal({
@@ -230,16 +232,16 @@ export function run_debug()
 	if (process.platform === 'linux')
 	{
 		terminal.sendText("pwsh"); //on linux default shell we need a different keyword
-		sleep(1000);
+		sleep();
 		terminal.sendText("powershell"); //we run this in case the user changed their default shell
 	}
 	else
 	{
 		terminal.sendText("powershell");
-		sleep(1000);
+		sleep();
 		terminal.sendText("pwsh");
 	}
-	sleep(1000);//We have to wait for the shell to change. Otherwise our following commands won't be executed
+	sleep();//We have to wait for the shell to change. Otherwise our following commands won't be executed
 	
 	const TempDir = tmpdir();
 
@@ -278,7 +280,7 @@ export function run_debug()
 	//for the execution of the commands to finish, we might read the file before it even exits or is updated as
 	//part of this run.
 	//On my machine the minimum wait needed is about 700 miliseconds
-	sleep(1000);
+	sleep();
 
 
 	//We open the file		

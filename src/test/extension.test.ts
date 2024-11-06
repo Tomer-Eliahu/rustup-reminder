@@ -33,12 +33,50 @@ suite('Extension Test Suite', () => {
 
 	//This test will automatically test the entire logic of the extension even when that logic is updated
 	test('Whole Extension', ()=> {
-		run();
+
+		//CI min wait time for tests to pass is 5_000 miliseconds
+		const ci_min_wait = 5000;
+
+		/**
+		 * blocks for ci_min_wait in miliseconds
+		 */
+		function sleep() {
+			const intial_timestamp = Date.now();
+			let current_time = Date.now();
+			while ( (current_time- intial_timestamp ) < ci_min_wait)
+			{
+				current_time = Date.now();
+			}
+	
+		}
+	
+		run(sleep);
 	});
 
 
 	test('Whole Extension with addtional asserts and logs', ()=> {
-		run_debug();
+		
+		let setting_wait_time = vscode.workspace.getConfiguration().get('rustup-reminder.Delay');
+		assert.strictEqual(typeof setting_wait_time, "number", 'setting_wait_time was not recognized as a number');
+
+		//CI min wait time for tests to pass is 5_000 miliseconds
+		const ci_min_wait = 5000;
+		console.log(`CI: setting wait time is set to ${setting_wait_time}. Actual wait time used is ${ci_min_wait}`);
+
+		/**
+		 * blocks for ci_min_wait in miliseconds
+		 */
+		function sleep() {
+			const intial_timestamp = Date.now();
+			let current_time = Date.now();
+			while ( (current_time- intial_timestamp ) < ci_min_wait)
+			{
+				current_time = Date.now();
+			}
+
+		}
+
+		run_debug(sleep);
 	});
 
 });
