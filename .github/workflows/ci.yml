@@ -62,9 +62,9 @@ jobs:
     #LOG output of rustc --version and save it in env varaible
     - name: set up env var that is the initial Rust version
       shell: bash #The default on non-Windows. Note this only impacts this step
-      run:  |
-        echo "INITIAL_RUST_VERSION="$(rustc --version)"" >> $GITHUB_ENV
-        echo "The value of INITIAL_RUST_VERSION is ${{ env.INITIAL_RUST_VERSION }} "
+      run: echo "INITIAL_RUST_VERSION="$(rustc --version)"" >> $GITHUB_ENV
+    - shell: bash #The default on non-Windows. Note this only impacts this step
+      run: echo "The value of INITIAL_RUST_VERSION is ${{ env.INITIAL_RUST_VERSION }} "
 
 
     #Install Node and run our tests
@@ -81,20 +81,21 @@ jobs:
     #Stable Rust should have been updated
 
     #Since the default tool chain was set to the outdated version of rust, we also MUST run this
-    - run: rustup default stable #this changes the default toolchain to the latest version of stable installed (apparently)
-      
-      #Alternative: We now need to uninstall the old version of rust as that is the default
-      #use rustup uninstall ${{ steps.rustup_toolchain_install.outputs.name }} to uninstall that outdated version we installed above.
+    - run: rustup toolchain uninstall 1.81 #uninstall that outdated version we installed above.
+      #This:
+      #- run: rustup default stable #this changes the default toolchain to the latest version of stable installed (apparently)
+      #is not good as it installs the latest stable version of rust so we can't tell if our test worked.
 
-      #check default stable is now the latest version of stable
+
+    #check default stable is now the latest version of stable
     - run: rustup show
     
     #LOG output of rustc --version (that should now be different as rust should have been updated) and save it in env varaible
     - name: set up env var that is the updated Rust version
       shell: bash #The default on non-Windows. Note this only impacts this step
-      run:  |
-        echo "UPDATED_RUST_VERSION="$(rustc --version)"" >> $GITHUB_ENV
-        echo "The value of UPDATED_RUST_VERSION is ${{ env.UPDATED_RUST_VERSION }} "
+      run: echo "UPDATED_RUST_VERSION="$(rustc --version)"" >> $GITHUB_ENV
+    - shell: bash #The default on non-Windows. Note this only impacts this step
+      run: echo "The value of UPDATED_RUST_VERSION is ${{ env.UPDATED_RUST_VERSION }} "
 
 
     - name: check if rust was updated (assert the env variables are not equal)

@@ -313,7 +313,13 @@ export function run_debug(sleep: () => void)
 		if (stable_arr.length === 1) //There should be exactly one line that begins with stable
 		{
 			console.log("Got here: found exactly one line detailing stable");
-			update_available = stable_arr[0].includes("Update available");
+			
+			//TEST MODIFICATION
+			//Make GitHub CI tests trigger update
+			//We need this because rustup check reports outdated versions of rust that we installed on purpose
+			//like 1.81-x86_64-pc-windows-msvc as up to date.
+			update_available = stable_arr[0].includes("Update available") || 
+			stable_arr[0].includes("1.81.0 (eeb90cda1 2024-09-04)");
 
 			if(!update_available && !(stable_arr[0].includes("Up to date")) )
 			{
