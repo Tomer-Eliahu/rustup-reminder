@@ -1,0 +1,49 @@
+name: test_rust_does_update
+
+on:
+  workflow_dispatch: #Enables manual run of this workflow
+
+jobs:
+  build:
+    env: 
+      #We set these env variables at the JOB level (this makes them scoped at the JOB level)
+      INITIAL_RUST_VERSION: ''
+      UPDATED_RUST_VERSION: ''
+      
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout #Clones the repository to the runner
+      uses: actions/checkout@v4
+      
+    - name: rustup toolchain install
+    # Installs the most recent stable toolchain as of the specified time
+    # offset, which may be written in years, months, weeks, or days.
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: stable 8 weeks ago
+
+    #LOG output of rustc --version and save it in env varaible
+    - name: set up env var that is the initial Rust version
+      shell: bash #The default on non-Windows. Note this only impacts this step
+      run: echo "INITIAL_RUST_VERSION="$(rustc --version)"" >> $GITHUB_ENV
+    - name: output the initial Rust version env var
+      shell: bash #The default on non-Windows. Note this only impacts this step
+      run: echo "The value of INITIAL_RUST_VERSION is ${{ env.INITIAL_RUST_VERSION }} "
+
+    - shell: pwsh
+      run: rustup update -- stable
+
+    
+    #LOG output of rustc --version (that should now be different as rust should have been updated) and save it in env varaible
+    - name: set up env var that is the updated Rust version
+      shell: bash #The default on non-Windows. Note this only impacts this step
+      run: echo "UPDATED_RUST_VERSION="$(rustc --version)"" >> $GITHUB_ENV
+    - name: output the updated Rust version env var
+      shell: bash #The default on non-Windows. Note this only impacts this step
+      run: echo "The value of UPDATED_RUST_VERSION is ${{ env.UPDATED_RUST_VERSION }} "
+
+
+    - name: check if rust was updated #Assert the env varaibles are not equal
+      if: ${{ env.UPDATED_RUST_VERSION }} == ${{ env.UPDATED_RUST_VERSION }}
+      run: exit 1 #causes the job to fail
+      
