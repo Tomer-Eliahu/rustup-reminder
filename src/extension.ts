@@ -381,6 +381,8 @@ export function run_debug(sleep: () => void)
 			//If we are updating stable Rust, then we want the terminal to persist
 			dispose_of_terminal = false;
 
+			console.log("Installing update to stable rust");
+
 		}
 		else if (update_available && !setting_update_when_possible)
 		{

@@ -80,15 +80,14 @@ jobs:
 
     #Stable Rust should have been updated
 
+    #check default stable is now the latest version of stable
+    - run: rustup show
+
     #Since the default tool chain was set to the outdated version of rust, we also MUST run this
     - run: rustup toolchain uninstall 1.81 #uninstall that outdated version we installed above.
       #This:
       #- run: rustup default stable #this changes the default toolchain to the latest version of stable installed (apparently)
       #is not good as it installs the latest stable version of rust so we can't tell if our test worked.
-
-
-    #check default stable is now the latest version of stable
-    - run: rustup show
     
     #LOG output of rustc --version (that should now be different as rust should have been updated) and save it in env varaible
     - name: set up env var that is the updated Rust version
