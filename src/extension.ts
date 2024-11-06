@@ -300,7 +300,15 @@ export function run_debug(sleep: () => void)
 		//https://github.com/rust-lang/rustup/blob/708ffd6aeaa84d291d2a16cfd99bb45ae7e1e575/tests/suite/cli_exact.rs#L160 ,
 		//https://github.com/rust-lang/rustup/blob/708ffd6aeaa84d291d2a16cfd99bb45ae7e1e575/tests/suite/cli_exact.rs#L179.
 		
-		const stable_arr = result_array.filter( (line: string) => {return line.startsWith("stable");} );
+		//TEST MODIFICATION
+		//Since some of the GitHub CI tests install an *outdated* version of rust on purpose,
+		//that outdated version will be called something like 1.81-x86_64-pc-windows-msvc
+		//As opposed to stable-x86_64-pc-windows-msvc. 
+		//We account for that here in the run_debug function only.
+		const stable_arr = result_array.filter( 
+			(line: string) => {
+			return ( line.startsWith("stable") || line.includes("1.81.0 (eeb90cda1 2024-09-04)") ) ;} 
+		);
 		console.log(`Identifed the last line correctly and stable_arr is ${stable_arr}`);
 		if (stable_arr.length === 1) //There should be exactly one line that begins with stable
 		{

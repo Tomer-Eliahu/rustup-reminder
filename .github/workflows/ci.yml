@@ -51,12 +51,8 @@ jobs:
     - run: rustup toolchain uninstall stable
 
     - name: rustup toolchain install
-    # Installs the most recent stable toolchain as of the specified time
-    # offset, which may be written in years, months, weeks, or days.
-    # Also sets that as the default toolchain.
-      uses: dtolnay/rust-toolchain@master
-      with:
-        toolchain: stable 8 weeks ago
+      uses: dtolnay/rust-toolchain@1.81 #Installs rust 1.81 (an outdated version) and sets that as the default toolchain
+
 
     #check we do NOT have the latest stable version
     - run: rustup show
