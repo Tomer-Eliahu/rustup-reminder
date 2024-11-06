@@ -56,7 +56,7 @@ jobs:
 
     #LOG output of rustc --version and save it in env varaible
     - name: set up env var that is the initial Rust version
-      run: echo "INITIAL_RUST_VERSION="$(echo rustc --version)"" >> $GITHUB_ENV
+      run: echo "INITIAL_RUST_VERSION="$(rustc --version)"" >> $GITHUB_ENV
     - name: output the initial Rust version env var
       run: echo The value of INITIAL_RUST_VERSION is ${{ env.INITIAL_RUST_VERSION }}
       #alternative echo ${{ env.INITIAL_RUST_VERSION }}
@@ -73,7 +73,7 @@ jobs:
 
     #LOG output of rustc --version (that should now be different as rust should have been updated) and save it in env varaible
     - name: set up env var that is the updated Rust version
-      run: echo "UPDATED_RUST_VERSION="$(echo rustc --version)"" >> $GITHUB_ENV
+      run: echo "UPDATED_RUST_VERSION="$(rustc --version)"" >> $GITHUB_ENV
     - name: output the updated Rust version env var
       run: echo The value of UPDATED_RUST_VERSION is ${{ env.UPDATED_RUST_VERSION }}
 
