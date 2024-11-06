@@ -19,12 +19,15 @@ jobs:
     - shell: pwsh
       run: rustup show
 
-      #completely uninstall rust
+      #uninstall stable rust
     - shell: bash
-      run: |
-        rustup self uninstall 
-        yes 'y'
-      #alternative: rustup toolchain uninstall stable
+      run:  rustup toolchain uninstall stable
+      #alternative: 
+      # |
+      #  rustup self uninstall 
+      #  yes 'y'
+        
+        rustup toolchain uninstall stable
 
       #check uninstall was successful
     - shell: pwsh
