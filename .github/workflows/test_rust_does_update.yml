@@ -9,7 +9,6 @@ jobs:
       #We set these env variables at the JOB level (this makes them scoped at the JOB level)
       INITIAL_RUST_VERSION: ''
       UPDATED_RUST_VERSION: ''
-      RUST_UPDATED: false
     runs-on: ubuntu-latest
     steps:
     - name: Checkout #Clones the repository to the runner
@@ -64,15 +63,7 @@ jobs:
       run: echo "The value of UPDATED_RUST_VERSION is ${{ env.UPDATED_RUST_VERSION }} "
 
 
-    - name: check if rust was updated 
+    - name: check if rust was updated (assert the env variables are not equal)
       shell: bash
-      run: |
-        echo "INITIAL_RUST_VERSION=${{ env.UPDATED_RUST_VERSION == env.UPDATED_RUST_VERSION }}" >> $GITHUB_ENV
-        echo "The value of INITIAL_RUST_VERSION is ${{ env.RUST_UPDATED }} "
-    
-    - name: Assert the env varaibles are not equal
-      shell: bash
-      if: ${{ env.RUST_UPDATED }}
+      if: ${{ env.INITIAL_RUST_VERSION == env.UPDATED_RUST_VERSION }}
       run: exit 1 #causes the job to fail
-      
- #old ${{ env.UPDATED_RUST_VERSION }} == ${{ env.UPDATED_RUST_VERSION }}
