@@ -51,7 +51,7 @@ jobs:
       
       #Since the default tool chain was set to the outdated version of rust, we also need to run this
     - shell: pwsh
-      run: rustup default stable
+      run: rustup default stable #this changes the default toolchain to the latest version of stable installed (apparently)
     
     #LOG output of rustc --version (that should now be different as rust should have been updated) and save it in env varaible
     - name: set up env var that is the updated Rust version
@@ -63,6 +63,7 @@ jobs:
 
 
     - name: check if rust was updated #Assert the env varaibles are not equal
-      if: ${{ env.UPDATED_RUST_VERSION }} == ${{ env.UPDATED_RUST_VERSION }}
+      if: ${{ env.UPDATED_RUST_VERSION == env.UPDATED_RUST_VERSION }}
       run: exit 1 #causes the job to fail
       
+ #old ${{ env.UPDATED_RUST_VERSION }} == ${{ env.UPDATED_RUST_VERSION }}
