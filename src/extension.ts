@@ -353,6 +353,9 @@ export function run_debug(sleep: () => void)
 			//We do not want the user to see the previous terminal commands
 			terminal.sendText('clear', true);
 
+			//TEMP MODIFICATION: We need to sleep so that the commands execute sequentially
+			sleep();
+
 			//Update stable Rust and potentially rustup itself.
 			terminal.sendText('rustup update -- stable', true);
 			

@@ -74,10 +74,10 @@ jobs:
       if: runner.os != 'Linux'
     
     #Note since the test ends as rust is *starting* to update, we need to wait a bit
+
     - name: Sleep to let rust update
       shell: bash #The default on non-Windows. Note this only impacts this step
-      run: sleep 5m #based on CI install times of the old version of Rust, this should be enough time
-
+      run: sleep 300 #based on CI install times of the old version of Rust, this should be enough time (in seconds)
 
 
     #LOG output of rustc --version (that should now be different as rust should have been updated) and save it in env varaible
