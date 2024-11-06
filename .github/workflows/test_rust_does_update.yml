@@ -23,7 +23,7 @@ jobs:
     - shell: bash
       run: |
         rustup self uninstall 
-        yes
+        yes 'y'
       #alternative: rustup toolchain uninstall stable
 
       #check uninstall was successful
