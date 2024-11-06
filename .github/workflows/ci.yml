@@ -76,7 +76,7 @@ jobs:
     #Note since the test ends as rust is *starting* to update, we need to wait a bit
     - name: Sleep to let rust update
       shell: bash #The default on non-Windows. Note this only impacts this step
-      run: sleep 30s #based on CI install times of the old version of Rust, this should be enough time
+      run: sleep 5m #based on CI install times of the old version of Rust, this should be enough time
 
 
 
