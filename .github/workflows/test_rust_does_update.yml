@@ -20,12 +20,14 @@ jobs:
       run: rustup toolchain uninstall stable
       #alternative: rustup self uninstall
       
-    - name: rustup toolchain install
+    - name: rustup_toolchain_install
     # Installs the most recent stable toolchain as of the specified time
-    # offset, which may be written in years, months, weeks, or days.
+    # offset, which may be written in years, months, weeks, or days. Also sets that as the default toolchain
+    
       uses: dtolnay/rust-toolchain@master
       with:
         toolchain: stable 8 weeks ago
+
 
       #check we do not have the latest stable version
     - shell: pwsh
@@ -39,9 +41,17 @@ jobs:
       shell: bash #The default on non-Windows. Note this only impacts this step
       run: echo "The value of INITIAL_RUST_VERSION is ${{ env.INITIAL_RUST_VERSION }} "
 
+
+      #Update rust
     - shell: pwsh
       run: rustup update -- stable
 
+      #We now need to uninstall the old version of rust as that was 
+      #rust default stable #see if this switches to the latest version of stable  ${{ steps.rustup_toolchain_install.outputs.name }}
+      
+      #Since the default tool chain was set to the outdated version of rust, we also need to run this
+    - shell: pwsh
+      run: rustup default stable
     
     #LOG output of rustc --version (that should now be different as rust should have been updated) and save it in env varaible
     - name: set up env var that is the updated Rust version
