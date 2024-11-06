@@ -45,8 +45,8 @@ jobs:
       run: rustup update -- stable
       
       #Since the default tool chain was set to the outdated version of rust, we also need to run this
-    - shell: pwsh
-      run: rustup default stable #this changes the default toolchain to the latest version of stable installed (apparently)
+      #TODO UNCOMMENT- shell: pwsh
+      #TODO UNCOMMENT- run: rustup default stable #this changes the default toolchain to the latest version of stable installed (apparently)
       #Alternative: We now need to uninstall the old version of rust as that is the default
       #use rustup uninstall ${{ steps.rustup_toolchain_install.outputs.name }} to uninstall that outdated version we installed above.
 
