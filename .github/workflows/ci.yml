@@ -56,8 +56,10 @@ jobs:
 
     #LOG output of rustc --version and save it in env varaible
     - name: set up env var that is the initial Rust version
+      shell: bash #The default on non-Windows. Note this only impacts this step
       run: echo "INITIAL_RUST_VERSION="$(rustc --version)"" >> $GITHUB_ENV
     - name: output the initial Rust version env var
+      shell: bash #The default on non-Windows. Note this only impacts this step
       run: echo "The value of INITIAL_RUST_VERSION is ${{ env.INITIAL_RUST_VERSION }} "
       #alternative echo ${{ env.INITIAL_RUST_VERSION }}
 
@@ -70,11 +72,20 @@ jobs:
       if: runner.os == 'Linux'
     - run: npm test
       if: runner.os != 'Linux'
+    
+    #Note since the test ends as rust is *starting* to update, we need to wait a bit
+    - name: Sleep to let rust update
+      shell: bash #The default on non-Windows. Note this only impacts this step
+      run: sleep 30s #based on CI install times of the old version of Rust, this should be enough time
+
+
 
     #LOG output of rustc --version (that should now be different as rust should have been updated) and save it in env varaible
     - name: set up env var that is the updated Rust version
+      shell: bash #The default on non-Windows. Note this only impacts this step
       run: echo "UPDATED_RUST_VERSION="$(rustc --version)"" >> $GITHUB_ENV
     - name: output the updated Rust version env var
+      shell: bash #The default on non-Windows. Note this only impacts this step
       run: echo "The value of UPDATED_RUST_VERSION is ${{ env.UPDATED_RUST_VERSION }} "
 
 
