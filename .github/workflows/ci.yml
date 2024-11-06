@@ -79,5 +79,5 @@ jobs:
 
 
     - name: check if rust was updated #Assert the env varaibles are not equal
-      if: $INITIAL_RUST_VERSION == $UPDATED_RUST_VERSION
+      if: ${{ env.UPDATED_RUST_VERSION }} == ${{ env.UPDATED_RUST_VERSION }}
       run: exit 1 #causes the job to fail
