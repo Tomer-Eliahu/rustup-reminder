@@ -14,6 +14,19 @@ jobs:
     steps:
     - name: Checkout #Clones the repository to the runner
       uses: actions/checkout@v4
+
+      #see which rust versions we already have installed. We need to Uninstall the latest stable version
+    - shell: pwsh
+      run: rustup show
+
+      #completely uninstall rust
+    - shell: pwsh
+      run: rustup self uninstall
+      #alternative: rustup toolchain uninstall stable
+
+      #check uninstall was successful
+    - shell: pwsh
+      run: rustup show
       
     - name: rustup toolchain install
     # Installs the most recent stable toolchain as of the specified time
@@ -21,6 +34,10 @@ jobs:
       uses: dtolnay/rust-toolchain@master
       with:
         toolchain: stable 8 weeks ago
+
+      #check we do not have the latest stable version
+    - shell: pwsh
+      run: rustup show
 
     #LOG output of rustc --version and save it in env varaible
     - name: set up env var that is the initial Rust version
