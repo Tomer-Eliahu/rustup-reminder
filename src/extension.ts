@@ -354,6 +354,7 @@ export function run_debug(sleep: () => void)
 			terminal.sendText('clear', true);
 
 			//TEMP MODIFICATION: We need to sleep so that the commands execute sequentially
+			//TODO: remove or reduce this
 			sleep();
 
 			//Update stable Rust and potentially rustup itself.
