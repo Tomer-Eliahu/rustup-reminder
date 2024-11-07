@@ -82,17 +82,7 @@ jobs:
     #Stable Rust should have been updated
     - run: rustup show
 
-
-    #Since the default tool chain was set to the outdated version of rust, we also MUST run this
-    - run: rustup default none #unset the default
-      #This:
-      #- run: rustup default stable #this changes the default toolchain to the latest version of stable installed (apparently)
-      #is not good as it installs the latest stable version of rust so we can't tell if our test worked.
-
-
-    #check default stable is now the latest version of stable
-    - run: rustup show
-
+    #MAYBE TRY rustup toolchain ls instead of rustup show (as rustup show sometimes updates rust)
     - run: rustup toolchain ls
     #TODO: add assert here or something that this includes the word stable-- this is how we test
     #the extension updated rust and not any of the following commands
@@ -100,8 +90,18 @@ jobs:
     #I think you use grep for this (not sure)
 
 
-    #MAYBE TRY rustup toolchain ls instead of rustup show (as rustup show sometimes updates rust)
-    
+
+    #Since the default tool chain was set to the outdated version of rust, we also MUST run this
+    - run: rustup default stable #this changes the default toolchain to the latest version of stable installed (apparently)
+      #Note this as it installs the latest stable version of rust (if it wasn't already installed)
+      #so we can't tell if our test worked.
+      #We need to account for this
+
+
+    #check default stable is now the latest version of stable
+    - run: rustup show
+
+
     #LOG output of rustc --version (that should now be different as rust should have been updated) and save it in env varaible
     - name: set up env var that is the updated Rust version
       shell: bash #The default on non-Windows. Note this only impacts this step
