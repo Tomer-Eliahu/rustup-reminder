@@ -64,7 +64,7 @@ jobs:
       # runs subcommand rustup show and store output in rustup_show_output, checks if output DOES NOT have
       #the word stable in it, sets that as the NO_STABLE_BEFORE_EXTENSION value
       run: |
-        rustup_show_output = $(rustup show)
+        rustup_show_output = "$(rustup show)"
         substring_to_search_for = "stable"
         echo "rustup_show_output is $rustup_show_output"
         echo "substring_to_search_for is $substring_to_search_for. The results of the search are: "
