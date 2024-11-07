@@ -103,7 +103,7 @@ export function run(sleep: () => void) {
 	//Note that without shell integration, we can't know when a command has finished execution. 
 	//And shell intergration is not a given.
 	//By appending a timestamped 'finished execution' message to the file we can verify the latest rustup check command has finished execution.
-	const timestamp = Date.now();
+	const timestamp = Date.now(); //CRITICAL: apparently this is so slow, that we do not need to sleep here
 	const finished_execution_command = `echo '\nRustUpReminder rustup check command finished ${timestamp}' | Out-File -FilePath ${FilePath} -Encoding utf8 -Append`;
 	terminal.sendText(finished_execution_command, true);
 
@@ -273,7 +273,7 @@ export function run_debug(sleep: () => void)
 
 	const write_command = `rustup check | Out-File -FilePath ${FilePath} -Encoding utf8`;
 	terminal.sendText(write_command, true);
-	const timestamp = Date.now();
+	const timestamp = Date.now();//CRITICAL: apparently this is so slow, that we do not need to sleep here
 	const finished_execution_command = `echo '\nRustUpReminder rustup check command finished ${timestamp}' | Out-File -FilePath ${FilePath} -Encoding utf8 -Append`;
 	terminal.sendText(finished_execution_command, true);
 	console.log(finished_execution_command);
