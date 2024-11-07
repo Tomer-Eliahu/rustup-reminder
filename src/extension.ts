@@ -171,6 +171,9 @@ export function run(sleep: () => void) {
 			//We do not want the user to see the previous terminal commands
 			terminal.sendText('clear', true);
 
+			//We need to sleep so that the commands execute sequentially
+			sleep();
+
 			//Update stable Rust and potentially rustup itself.
 			terminal.sendText('rustup update -- stable', true);
 			
@@ -272,9 +275,8 @@ export function run_debug(sleep: () => void)
 	terminal.sendText(write_command, true);
 	const timestamp = Date.now();
 	const finished_execution_command = `echo '\nRustUpReminder rustup check command finished ${timestamp}' | Out-File -FilePath ${FilePath} -Encoding utf8 -Append`;
-	console.log(finished_execution_command);
 	terminal.sendText(finished_execution_command, true);
-	
+	console.log(finished_execution_command);
 
 	//CRITICAL: Note that we *MUST* wait here. If we do not, since using sendText to the terminal doesn't wait
 	//for the execution of the commands to finish, we might read the file before it even exits or is updated as
@@ -366,10 +368,9 @@ export function run_debug(sleep: () => void)
 
 			//We do not want the user to see the previous terminal commands
 			terminal.sendText('clear', true);
-
-			//TEMP MODIFICATION: We need to sleep so that the commands execute sequentially
-			//TODO: remove or reduce this. If this is needed, add this to the run function and update readme to 3-4 times
-			//sleep();
+ 
+			//We need to sleep so that the commands execute sequentially
+			sleep();
 
 			//Update stable Rust and potentially rustup itself.
 			terminal.sendText('rustup update -- stable', true);
