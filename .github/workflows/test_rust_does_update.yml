@@ -63,6 +63,9 @@ jobs:
     - shell: pwsh
       run: rustup show
     
+    - shell: pwsh
+      run: rustup check
+    
     #LOG output of rustc --version (that should now be different as rust should have been updated) and save it in env varaible
     - name: set up env var that is the updated Rust version
       shell: bash #The default on non-Windows. Note this only impacts this step
