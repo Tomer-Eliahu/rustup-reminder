@@ -61,9 +61,15 @@ jobs:
     
     - name: check we do NOT have the latest stable version
       shell: bash
-      # runs subcommand rustup show, checks if output DOES NOT have
+      # runs subcommand rustup show and store output in rustup_show_output, checks if output DOES NOT have
       #the word stable in it, sets that as the NO_STABLE_BEFORE_EXTENSION value
-      run: echo "NO_STABLE_BEFORE_EXTENSION="$([[ "stable" != *"$(rustup show)"* ]])"" >> $GITHUB_ENV
+      run: |
+        rustup_show_output = $(rustup show)
+        substring_to_search_for = "stable"
+        echo "rustup_show_output is $rustup_show_output"
+        echo "substring_to_search_for is $substring_to_search_for. The results of the search are: "
+        echo [[ ! $rustup_show_output =~ $substring_to_search_for ]]
+        echo "NO_STABLE_BEFORE_EXTENSION="$([[ ! $rustup_show_output =~ $substring_to_search_for ]])"" >> $GITHUB_ENV
     - shell: bash #The default on non-Windows. Note this only impacts this step
       run: echo "The value of NO_STABLE_BEFORE_EXTENSION is ${{ env.NO_STABLE_BEFORE_EXTENSION }} "
     
