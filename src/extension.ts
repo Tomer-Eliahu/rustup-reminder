@@ -368,8 +368,8 @@ export function run_debug(sleep: () => void)
 			terminal.sendText('clear', true);
 
 			//TEMP MODIFICATION: We need to sleep so that the commands execute sequentially
-			//TODO: remove or reduce this
-			sleep();
+			//TODO: remove or reduce this. If this is needed, add this to the run function and update readme to 3-4 times
+			//sleep();
 
 			//Update stable Rust and potentially rustup itself.
 			terminal.sendText('rustup update -- stable', true);
