@@ -43,6 +43,8 @@ jobs:
       #We set these env variables at the JOB level (this makes them scoped at the JOB level)
       INITIAL_RUST_VERSION: ''
       UPDATED_RUST_VERSION: ''
+      NO_STABLE_BEFORE_EXTENSION: false
+      STABLE_AFTER_EXTENSIO: false
     steps:
     - name: Checkout #Clones the repository to the runner
       uses: actions/checkout@v4
@@ -56,8 +58,21 @@ jobs:
         toolchain: 1.81 #Installs rust 1.81 (an outdated version) and sets that as the default toolchain
 
 
-    #check we do NOT have the latest stable version
-    - run: rustup show
+    
+    - name: check we do NOT have the latest stable version
+      shell: bash
+      # runs subcommand rustup show, checks if output DOES NOT have
+      #the word stable in it, sets that as the NO_STABLE_BEFORE_EXTENSION value
+      run: echo "NO_STABLE_BEFORE_EXTENSION="$([[ "stable" != *"$(rustup show)"* ]])"" >> $GITHUB_ENV
+    - shell: bash #The default on non-Windows. Note this only impacts this step
+      run: echo "The value of NO_STABLE_BEFORE_EXTENSION is ${{ env.NO_STABLE_BEFORE_EXTENSION }} "
+    
+    - run: rustup show #for inspection that the above command ran correctly
+
+    - name: Assert no latest stable installed before we run our tests
+      shell: bash
+      if: ${{ env.NO_STABLE_BEFORE_EXTENSION }} == false
+      run: exit 1 #causes the job to fail
 
     #LOG output of rustc --version and save it in env varaible
     - name: set up env var that is the initial Rust version
