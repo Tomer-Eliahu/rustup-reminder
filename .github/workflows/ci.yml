@@ -82,8 +82,9 @@ jobs:
     #Stable Rust should have been updated
     - run: rustup show
 
-    #MAYBE TRY rustup toolchain ls instead of rustup show (as rustup show sometimes updates rust)
-    - run: rustup toolchain ls
+    #MAYBE TRY rustup toolchain list instead of rustup show (as rustup show sometimes updates rust)
+    - run: rustup toolchain list
+
     #TODO: add assert here or something that this includes the word stable-- this is how we test
     #the extension updated rust and not any of the following commands
     #also duplicate this and add an assert before running our tests that it does NOT include the word stable
@@ -93,7 +94,7 @@ jobs:
 
     #Since the default tool chain was set to the outdated version of rust, we also MUST run this
     - run: rustup default stable #this changes the default toolchain to the latest version of stable installed (apparently)
-      #Note this as it installs the latest stable version of rust (if it wasn't already installed)
+      #CRITICAL Note: this installs the latest stable version of rust (if it wasn't already installed).
       #so we can't tell if our test worked.
       #We need to account for this
 

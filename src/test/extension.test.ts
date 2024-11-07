@@ -89,7 +89,7 @@ suite('Extension Test Suite', () => {
 			}
 
 		}
-		wait_finish_upate(1000 * 30); //TODO: Remove or reduce this. wait 30 seconds
+		//wait_finish_upate(1000 * 30); //TODO: Remove or reduce this. wait 30 seconds
 
 
 	});
