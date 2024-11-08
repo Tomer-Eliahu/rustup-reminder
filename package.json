@@ -1,23 +1,65 @@
 {
   "name": "rustup-reminder",
   "displayName": "RustUp Reminder",
-  "description": "",
-  "version": "0.0.1",
+  "description": "RustUp Reminder: Reminds you when a new stable version of Rust is out",
+  "version": "1.0.0",
+  "publisher": "Tomer-Eliahu",
+  "author": {
+    "name": "Tomer Eliahu"
+  },
   "engines": {
     "vscode": "^1.95.0"
   },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [],
+
+
+  "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tomer-Eliahu/rustup-reminder.git"  
+  },
+  "homepage": "https://github.com/Tomer-Eliahu/rustup-reminder#readme",
+  
+  "galleryBanner": {
+    "color": "#1863a1",
+    "theme": "light"
+  },
+
+
+  "categories": ["Other"],
+  "keywords": ["rustup reminder", "rust", "reminder", "notification", "update"],
+  "icon": "images/icon.png",
+  
+
+  "activationEvents": ["onLanguage:rust"],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "rustup-reminder.helloWorld",
-        "title": "Hello World"
+    
+    "configuration": [{
+        "title": "RustUp Reminder",
+        "properties": {
+          "rustup-reminder.NotifyWhenUpToDate": {
+              "markdownDescription": "Whether to *also* notify you if your stable Rust version is up to date. The default is to only notify you if there is an update available.",
+              "default": false,
+              "type": "boolean",
+              "order": 0
+          },
+          "rustup-reminder.UpdateWhenPossible": {
+              "markdownDescription": "Whether to automatically update your stable Rust version when an update is available. This is done by running 'rustup update -- stable' (updates the stable version and potentially rustup itself). The default is to not auto-update.",
+              "default": false,
+              "type": "boolean",
+              "order": 1
+          },
+          "rustup-reminder.Delay": {
+            "markdownDescription": "Delay in milliseconds after running terminal commands. This is necessary due to technical reasons. Default is 5000. See the Performance Tuning section in the extension description to learn more.",
+            "default": 5000,
+            "type": "number",
+            "order": 2
+        }
+      }
       }
     ]
+    
+    
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

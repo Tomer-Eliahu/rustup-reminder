@@ -2,25 +2,412 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
+//Other Imports
+import { readFileSync } from 'fs';
+import { tmpdir } from "os";
+import * as assert from 'assert';
+
+
+
+// This method is called when your extension is activated (This is the entry point to the extension)
 export function activate(context: vscode.ExtensionContext) {
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "rustup-reminder" is now active!');
+	// This line of code will only be executed once when your extension is activated 
+	// (your extension will be activated ONLY ONCE per instance)
+	//Uncomment the following line for debugging
+	//console.log('Congratulations, your extension "rustup-reminder" is now active!');
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
+	// You can define the following command in the package.json file
+	// by readding the following to contributes:     
+	// "commands": [
+    //   {
+    //     "command": "rustup-reminder.helloWorld",
+    //     "title": "Hello World"
+    //   }
+    // ],
 	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('rustup-reminder.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello VS code from RustUp Reminder!');
+	// This command is empty on purpose. It exists so that we can test the extension by running it.	
+	//Uncomment the following line for debugging
+	//context.subscriptions.push(vscode.commands.registerCommand('rustup-reminder.helloWorld', () => {}));
+	
+
+
+	//Unfortunately, we need to get the wait_time value ahead of calling run. 
+	//This is because the GitHub CI tests require a longer wait time for them to pass.
+	const setting_wait_time:number = vscode.workspace.getConfiguration().get('rustup-reminder.Delay')??5000;
+
+	/**
+	 * blocks for setting_wait_time in miliseconds
+	 */
+	function sleep() {
+		const intial_timestamp = Date.now();
+		let current_time = Date.now();
+		while ( (current_time- intial_timestamp ) < setting_wait_time)
+		{
+			current_time = Date.now();
+		}
+
+	}
+	
+	//Run the extension logic.
+	//Doing things this way means we can automatically test the whole extension even if we update the
+	//contents of the run function!
+	run(sleep);
+	
+}
+
+
+/**
+ * Runs RustUp Reminder
+ */
+export function run(sleep: () => void) {
+
+	const terminal = vscode.window.createTerminal({
+		name: `Ext Terminal rustup-reminder`,
+		hideFromUser: true
 	});
 
-	context.subscriptions.push(disposable);
+	//Changes the terminal to be powershell (if it was already powershell, it stays powershell)
+	if (process.platform === 'linux')
+	{
+		terminal.sendText("pwsh"); //on linux default shell we need a different keyword
+		sleep();
+		terminal.sendText("powershell"); //we run this in case the user changed their default shell
+	}
+	else
+	{
+		terminal.sendText("powershell");
+		sleep();
+		terminal.sendText("pwsh");
+	}
+	sleep();//We have to wait for the shell to change. Otherwise our following commands won't be executed
+
+	const TempDir = tmpdir();
+	
+	let FilePath ='';
+	//We need different filepaths depending if we are on Windows or not
+	if (process.platform === 'win32') //Note process.platform returns 'win32' even on 64-bit Windows systems
+	{
+		FilePath= `${TempDir}\\RustUpReminderTempOutput.txt`;
+	}
+	else
+	{
+	 	FilePath= `${TempDir}/RustUpReminderTempOutput.txt`;
+	}
+
+	//Writing rustup check output to a file is the only way we can retrieve it later
+	const write_command = `rustup check | Out-File -FilePath ${FilePath} -Encoding utf8`; 
+	terminal.sendText(write_command, true);
+
+	//Note that without shell integration, we can't know when a command has finished execution. 
+	//And shell intergration is not a given.
+	//By appending a timestamped 'finished execution' message to the file we can verify the latest rustup check command has finished execution.
+	const timestamp = Date.now(); //CRITICAL: apparently this is so slow, that we do not need to sleep here
+	const finished_execution_command = `echo '\nRustUpReminder rustup check command finished ${timestamp}' | Out-File -FilePath ${FilePath} -Encoding utf8 -Append`;
+	terminal.sendText(finished_execution_command, true);
+
+	//CRITICAL: Note that we *MUST* wait here. If we do not, since using terminal.sendText doesn't wait
+	//for the execution of the commands to finish, we might read the file before it even exists or is updated as
+	//part of this run.
+	sleep();
+
+	//We open the file		
+	const result = readFileSync(FilePath, { encoding: 'utf8', flag: 'r' }).trim(); //Note the trim here is important.
+	let result_array = result.split('\n'); //Note this doesn't impact result (result will still be the full file contents)
+
+	let no_error = true; //if there are (certain) errors during execution, then we want to output a different message to the user
+	let errors = "";//details the errors we encounterd that we want to surface to the user.
+	let update_available = false;
+
+	//See if the last line is the finished execution message. 
+	//This way we know there was no data race in the writes to file and the commands finished properly.
+	if (`RustUpReminder rustup check command finished ${timestamp}` === result_array.pop())
+	{
+		//Note: We are checking for the output we expect based on the following file (see these specific tests for reference):
+		//https://github.com/rust-lang/rustup/blob/708ffd6aeaa84d291d2a16cfd99bb45ae7e1e575/tests/suite/cli_exact.rs#L160 ,
+		//https://github.com/rust-lang/rustup/blob/708ffd6aeaa84d291d2a16cfd99bb45ae7e1e575/tests/suite/cli_exact.rs#L179.
+		
+		const stable_arr = result_array.filter( (line: string) => {return line.startsWith("stable");} );
+		if (stable_arr.length === 1) //There should be exactly one line that begins with stable
+		{
+			update_available = stable_arr[0].includes("Update available");
+
+			if(!update_available && !(stable_arr[0].includes("Up to date")) )
+			{
+				no_error = false;
+				errors = "The precise output formatting of rustup check appears to have changed";
+			}
+		}
+		else
+		{
+			no_error = false;
+			errors = `Could not find or single out the line that details whether the stable version of Rust is up to date or not in:\n${result}`;
+		}	
+	}
+	else
+	{
+		no_error = false;
+		errors = `Expected the following to end with "RustUpReminder rustup check command finished ${timestamp}" but instead got:\n${result}`;
+	}
+
+	//At this point we know if there is an update available to the stable version of Rust or not and whether we encountered any errors.
+
+	//We get the values the user set for the extension settings (they are bools)
+	const settings = vscode.workspace.getConfiguration();
+	const setting_notify_up_to_date = settings.get('rustup-reminder.NotifyWhenUpToDate');
+	const setting_update_when_possible = settings.get('rustup-reminder.UpdateWhenPossible');
+
+	let dispose_of_terminal = true;
+
+	if (no_error) // if we did not encounter errors
+	{
+		if (update_available && setting_update_when_possible)
+		{
+			//show update is available and starting update message (update Rust for them)
+			vscode.window.showInformationMessage('An update to Rust stable is available! Updating now!');
+
+			//We do not want the user to see the previous terminal commands
+			terminal.sendText('clear', true);
+
+			//We need to sleep so that the commands execute sequentially
+			sleep();
+
+			//Update stable Rust and potentially rustup itself.
+			terminal.sendText('rustup update -- stable', true);
+			
+			//We want the user to see the update process is happening. 
+			//That way they can see when the update finishes and handle any potential erros that arise from rustup themselves.
+			terminal.show();
+
+			//If we are updating stable Rust, then we want the terminal to persist
+			dispose_of_terminal = false;
+			
+		}
+		else if (update_available && !setting_update_when_possible)
+		{
+			//Notify the user there is an update available (and do NOT update Rust for them)
+			vscode.window.showInformationMessage('An update to Rust stable is available!');
+		}
+		else //Note this happens iff update_available = false
+		{
+			if (setting_notify_up_to_date)
+			{
+				//Notify the user their stable Rust version is up to date
+				vscode.window.showInformationMessage('Rust stable is up to date!');
+			}
+		}
+	}
+	else
+	{
+		//Report to the user we encoutered errors and detail them
+		const error_msg = `Error running RustUp Reminder:\n${errors}`;
+		vscode.window.showErrorMessage(error_msg);
+	}
+
+
+	if (dispose_of_terminal)
+	{
+		terminal.dispose(); //clean up the terminal
+	}
+	
 }
+
 
 // This method is called when your extension is deactivated
 export function deactivate() {}
+
+
+//For debugging purposes only (it is also used in a CI test)
+export function run_debug(sleep: () => void)
+{
+
+	const terminal = vscode.window.createTerminal({
+		name: `TEST2 Terminal rustup-reminder`,
+		hideFromUser: true
+	});
+
+	//terminal.show(); //Uncomment for Debugging
+	
+
+	//Changes the terminal to be powershell (if it was already powershell, it stays powershell)
+	if (process.platform === 'linux')
+	{
+		terminal.sendText("pwsh"); //on linux default shell we need a different keyword
+		sleep();
+		terminal.sendText("powershell"); //we run this in case the user changed their default shell
+	}
+	else
+	{
+		terminal.sendText("powershell");
+		sleep();
+		terminal.sendText("pwsh");
+	}
+	sleep();//We have to wait for the shell to change. Otherwise our following commands won't be executed
+	
+	const TempDir = tmpdir();
+
+		
+	let FilePath ='';
+	
+	//We need different filepaths depending if we are on Windows or not
+	if (process.platform === 'win32') //Note process.platform returns 'win32' even on 64-bit Windows systems
+	{
+		//TEST MODIFICATION
+		//Note I think these CI tests might be executed in parallel so we need a file for ea
+		FilePath= `${TempDir}\\TestRustUpReminderTempOutput.txt`;
+	}
+	else
+	{
+		//TEST MODIFICATION
+		//Note I think these CI tests might be executed in parallel so we need a file for each
+	 	FilePath= `${TempDir}/TestRustUpReminderTempOutput.txt`;
+	}
+	
+	console.log(`This platform is ${process.platform}`);
+
+
+	const command = `echo 'the path to the temp file is ${FilePath}'`;
+	console.log(command);
+
+	const write_command = `rustup check | Out-File -FilePath ${FilePath} -Encoding utf8`;
+	terminal.sendText(write_command, true);
+	const timestamp = Date.now();//CRITICAL: apparently this is so slow, that we do not need to sleep here
+	const finished_execution_command = `echo '\nRustUpReminder rustup check command finished ${timestamp}' | Out-File -FilePath ${FilePath} -Encoding utf8 -Append`;
+	terminal.sendText(finished_execution_command, true);
+	console.log(finished_execution_command);
+
+	//CRITICAL: Note that we *MUST* wait here. If we do not, since using sendText to the terminal doesn't wait
+	//for the execution of the commands to finish, we might read the file before it even exists or is updated as
+	//part of this run.
+	sleep();
+
+
+	//We open the file		
+	const result = readFileSync(FilePath, { encoding: 'utf8', flag: 'r' }).trim(); //Note the trim here is important.
+	console.log(`the file contents are \n${result}`);
+	let result_array = result.split('\n'); //Note this doesn't impact result (result will still be the full file contents)
+
+	let no_error = true; //if there is an error during execution, then we want to output a different message to the user
+	let errors = "";//details the errors we encounterd that we want to surface to the user.
+	let update_available = false;
+
+	//See if the last line is the finished execution message. 
+	//This way we know there was no data race in the writes to file and the commands finished properly.
+	if (`RustUpReminder rustup check command finished ${timestamp}` === result_array.pop())
+	{
+		//Note: We are checking for the output we expect based on the following file (see these specific tests for reference):
+		//https://github.com/rust-lang/rustup/blob/708ffd6aeaa84d291d2a16cfd99bb45ae7e1e575/tests/suite/cli_exact.rs#L160 ,
+		//https://github.com/rust-lang/rustup/blob/708ffd6aeaa84d291d2a16cfd99bb45ae7e1e575/tests/suite/cli_exact.rs#L179.
+		
+		//TEST MODIFICATION
+		//Since some of the GitHub CI tests install an *outdated* version of rust on purpose,
+		//that outdated version will be uniquely called something like 1.81-x86_64-pc-windows-msvc
+		//As opposed to stable-x86_64-pc-windows-msvc. 
+		//We account for that here in the run_debug function only.
+		const stable_arr = result_array.filter( 
+			(line: string) => {
+			return ( line.startsWith("stable") || line.includes("1.81.0 (eeb90cda1 2024-09-04)") ) ;} 
+		);
+		console.log(`Identifed the last line correctly and stable_arr is ${stable_arr}`);
+		if (stable_arr.length === 1) //There should be exactly one line that begins with stable
+		{
+			console.log("Got here: found exactly one line detailing stable");
+			
+			//TEST MODIFICATION
+			//Make GitHub CI tests trigger update
+			//We need this because rustup check reports outdated versions of rust that we installed on purpose
+			//like 1.81-x86_64-pc-windows-msvc as up to date.
+			update_available = stable_arr[0].includes("Update available") || 
+			stable_arr[0].includes("1.81.0 (eeb90cda1 2024-09-04)");
+
+			if(!update_available && !(stable_arr[0].includes("Up to date")) )
+			{
+				no_error = false;
+				errors = "The precise output formatting of rustup check appears to have changed";
+			}
+		}
+		else
+		{
+			no_error = false;
+			errors = `Could not find or single out the line that details whether the stable version of Rust is up to date or not in:\n${result}`;
+		}	
+	}
+	else
+	{
+		no_error = false;
+		errors = `Expected the following to end with "RustUpReminder rustup check command finished ${timestamp}" but instead got:\n${result}`;
+	}
+
+	//TEST ASSERTION ADDED
+	assert.strictEqual(no_error, true, `no_errors was false. erros is ${errors}`);
+
+	//We get the values the user set for the extension settings
+	const settings = vscode.workspace.getConfiguration();
+	const setting_notify_up_to_date = settings.get('rustup-reminder.NotifyWhenUpToDate');
+	let setting_update_when_possible = settings.get('rustup-reminder.UpdateWhenPossible');
+
+	//TEST ASSERTIONS ADDED
+	assert.strictEqual(typeof setting_notify_up_to_date, "boolean", 'setting_notify_up_to_date was not recognized as a bool');
+	assert.strictEqual(typeof setting_update_when_possible, "boolean", 'setting_update_when_possible was not recognized as a bool');
+	
+	//TEST MODIFICATION
+	//Setting this to true enables us to test that outdated rust versions do in-fact get updated in the GitHub CI tests
+	setting_update_when_possible = true;
+
+	let dispose_of_terminal = true;
+
+	if (no_error) // if we did not encounter errors
+	{
+		if (update_available && setting_update_when_possible)
+		{
+			//show update is available and starting update message (update Rust for them)
+			vscode.window.showInformationMessage('An update to Rust stable is available! Updating now!');
+
+			//We do not want the user to see the previous terminal commands
+			terminal.sendText('clear', true);
+ 
+			//We need to sleep so that the commands execute sequentially
+			sleep();
+
+			//Update stable Rust and potentially rustup itself.
+			terminal.sendText('rustup update -- stable', true);
+			
+			//We want the user to see the update process is happening. 
+			//That way they can see when the update finishes and handle any potential erros that arise from rustup themselves.
+			terminal.show(); 
+
+			//If we are updating stable Rust, then we want the terminal to persist
+			dispose_of_terminal = false;
+
+			console.log("Installing update to stable rust");
+
+		}
+		else if (update_available && !setting_update_when_possible)
+		{
+			//Notify the user there is an update available (and do NOT update Rust for them)
+			vscode.window.showInformationMessage('An update to Rust stable is available!');
+		}
+		else //Note this happens iff update_available = false
+		{
+			if (setting_notify_up_to_date)
+			{
+				//Notify the user their stable Rust version is up to date
+				vscode.window.showInformationMessage('Rust stable is up to date!');
+			}
+		}
+	}
+	else
+	{
+		//Report to the user we encoutered errors and detail them
+		const error_msg = `Error running RustUp Reminder:\n${errors}`;
+		vscode.window.showErrorMessage(error_msg);
+	}
+	
+
+	if (dispose_of_terminal)
+	{
+		terminal.dispose(); //clean up the terminal-- comment out for debugging
+	}
+
+}

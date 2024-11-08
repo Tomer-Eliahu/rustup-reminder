@@ -1,0 +1,154 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - functionality
+  schedule:
+    - cron: "0 6 * * 5"   # <=== If you want to change this value, this is helpful: https://crontab.guru .
+  
+  workflow_dispatch: #Enables manual run of this workflow
+
+#fail-fast: false makes all jobs run to completion (otherwise if one job fails, then the rest are cancelled)
+jobs:
+  build_up_to_date: #uses the latest stable version of Rust
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout #Clones the repository to the runner
+      uses: actions/checkout@v4
+    - name: rustup toolchain install
+      uses: dtolnay/rust-toolchain@stable
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18.x
+    - run: npm install
+    - run: xvfb-run -a npm test
+      if: runner.os == 'Linux'
+    - run: npm test
+      if: runner.os != 'Linux'
+
+  build_out_of_date: #uses an outdated stable version of Rust AND checks rust stable is updated (since we set auto-update = true in one of the extension tests)
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    env: 
+      #We set these env variables at the JOB level (this makes them scoped at the JOB level)
+      INITIAL_RUST_VERSION: ''
+      UPDATED_RUST_VERSION: ''
+      NO_STABLE_BEFORE_EXTENSION: false
+      STABLE_AFTER_EXTENSION: false
+    steps:
+    - name: Checkout #Clones the repository to the runner
+      uses: actions/checkout@v4
+
+      #uninstall stable rust (GitHub runners come with latest stable rust installed).
+    - run: rustup toolchain uninstall stable
+
+    - name: rustup toolchain install
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: 1.81 #Installs rust 1.81 (an outdated version) and sets that as the default toolchain
+        #Note we rely on installing this specific version of outdated rust in run_debug (see run_debug to learn more)
+
+
+    #LOG output of rustc --version and save it in env varaible
+    - name: set up env var that is the initial Rust version
+      shell: bash #The default on non-Windows. Note this only impacts this step
+      run: echo "INITIAL_RUST_VERSION="$(rustc --version)"" >> $GITHUB_ENV
+    - shell: bash #The default on non-Windows. Note this only impacts this step
+      run: echo "The value of INITIAL_RUST_VERSION is ${{ env.INITIAL_RUST_VERSION }} "
+
+
+
+
+    #Asserting we do NOT have latest stable rust installed before our tests
+    - name: check we do NOT have the latest stable version
+      shell: bash
+      # runs subcommand rustup show, checks if the output DOES NOT have
+      #the word stable in it. If it does not contan stable, set the NO_STABLE_BEFORE_EXTENSION value as true
+      run: |
+        if [[ ! "$(rustup show)" =~ "stable" ]]; then
+        echo "NO_STABLE_BEFORE_EXTENSION=true" >> $GITHUB_ENV
+        fi
+    - shell: bash #The default on non-Windows. Note this only impacts this step
+      run: echo "The value of NO_STABLE_BEFORE_EXTENSION is ${{ env.NO_STABLE_BEFORE_EXTENSION }} "
+    
+    - run: rustup show #for inspection that the above command ran correctly
+      #alternative: rustup toolchain list instead of rustup show
+
+    - name: Assert no latest stable installed before we run our tests
+      shell: bash
+      if: env.NO_STABLE_BEFORE_EXTENSION != 'true'
+      run: exit 1 #causes the job to fail
+    #End of asserting we do NOT have latest stable rust installed before our tests
+
+
+    #Install Node and run our tests
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18.x
+    - run: npm install
+    - run: xvfb-run -a npm test
+      if: runner.os == 'Linux'
+    - run: npm test
+      if: runner.os != 'Linux'
+
+
+    #Stable Rust should have been updated -- We assert that now
+    - name: check we DO have the latest stable version
+      shell: bash
+      # runs subcommand rustup show, checks if the output DOES have the word stable in it.
+      #If it DOES contain stable, set the STABLE_AFTER_EXTENSION value as true
+      run: |
+        if [[ "$(rustup show)" =~ "stable" ]]; then
+        echo "STABLE_AFTER_EXTENSION=true" >> $GITHUB_ENV
+        fi
+    - shell: bash #The default on non-Windows. Note this only impacts this step
+      run: echo "The value of STABLE_AFTER_EXTENSION is ${{ env.STABLE_AFTER_EXTENSION }} "
+    
+    - run: rustup show #for inspection that the above command ran correctly
+     #alternative: rustup toolchain list instead of rustup show
+
+    - name: Assert latest stable installed after we ran our tests
+      shell: bash
+      if: env.STABLE_AFTER_EXTENSION != 'true'
+      run: exit 1 #causes the job to fail
+
+    - run: rustup show #for inspection that the above command ran correctly
+    #End of asserting stable rust updated
+
+
+
+
+    #Since the default tool chain was set to the outdated version of rust, we also MUST run this
+    - run: rustup default stable #this changes the default toolchain to the latest version of stable installed (apparently)
+      #CRITICAL Note: this installs the latest stable version of rust (if it wasn't already installed).
+      #This is why we needed to assert the latest stable version was not installed before our tests
+      #AND immediatly installed after our tests.
+
+
+    #check default stable is now the latest version of stable
+    - run: rustup show
+
+
+    #LOG output of rustc --version (that should now be different as rust should have been updated) and save it in env varaible
+    - name: set up env var that is the updated Rust version
+      shell: bash #The default on non-Windows. Note this only impacts this step
+      run: echo "UPDATED_RUST_VERSION="$(rustc --version)"" >> $GITHUB_ENV
+    - shell: bash #The default on non-Windows. Note this only impacts this step
+      run: echo "The value of UPDATED_RUST_VERSION is ${{ env.UPDATED_RUST_VERSION }} "
+
+
+    - name: check if rust was updated (assert the env variables are not equal)
+      shell: bash
+      if: env.INITIAL_RUST_VERSION == env.UPDATED_RUST_VERSION
+      run: exit 1 #causes the job to fail

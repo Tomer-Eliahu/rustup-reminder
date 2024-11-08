@@ -1,0 +1,32 @@
+name: test_ubuntu
+
+on:
+  workflow_dispatch: #Enables manual run of this workflow
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout #Clones the repository to the runner
+      uses: actions/checkout@v4
+    - name: rustup toolchain install
+      uses: dtolnay/rust-toolchain@stable
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18.x
+    - run: npm install
+    - shell: pwsh
+      run: pwsh #Using powershell works on macOS but it doesn't on linux. Trying pwsh -- Update: pwsh works!
+    - shell: pwsh
+      run: rustup check | Out-File -FilePath /tmp/TestRustUpReminderTempOutput.txt -Encoding utf8
+    - shell: pwsh
+      run: echo '
+          RustUpReminder rustup check command finished timestamp' | Out-File -FilePath /tmp/TestRustUpReminderTempOutput.txt -Encoding utf8 -Append
+    - shell: pwsh
+      run: |
+          $text = Get-Content /tmp/TestRustUpReminderTempOutput.txt -Raw
+          echo The result is $text
+          
+    - run: xvfb-run -a npm test
+      if: runner.os == 'Linux'
