@@ -1,71 +1,57 @@
-# rustup-reminder README
+# RustUp Reminder
 
-This is the README for your extension "rustup-reminder". After writing up a brief description, we recommend including the following sections.
+RustUp Reminder lets you know when there is an update available to the stable version of Rust. 
 
-## Features
+It is essentially a wrapper that runs 'rustup check' for you. You can also configure RustUp Reminder to auto-update Rust stable.
+Select your desired behavior by using the extension settings.
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+Runs once you first open a Rust file in a given VS code instance. Opening additional files in the same VS code instance will *not* cause the extension to run again.
 
-For example if there is an image subfolder under your extension project workspace:
+## Disclaimer
 
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+This is a third-party extension. It is *not* a part of rustup or associated with rustup.
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+1. Requires rustup to be installed.
+2. Requires PowerShell to be installed.
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
 This extension contributes the following settings:
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+* `rustup-reminder.NotifyWhenUpToDate`: Whether to *also* notify you if your stable Rust version is up to date. The default is to only notify you if there is an update available.
 
-## Known Issues
+* `rustup-reminder.UpdateWhenPossible`: Whether to automatically update your stable Rust version when an update is available. This is done by running 'rustup update -- stable' (updates the stable version and potentially rustup itself). The default is to not auto-update.
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+* `rustup-reminder.Delay`: Delay in milliseconds after running terminal commands. This is necessary due to technical reasons. Default is 5000. See the Performance Tuning section below to learn more.
+
+## Known Issues and Performance Tuning
+
+If the extension fails, you might need to set your default terminal profile to PowerShell. You can do this by running the VS code command **Terminal: Select Default Profile** or by changing the appropriate setting from the list below:
+* `terminal.integrated.defaultProfile.linux`
+
+* `terminal.integrated.defaultProfile.osx`
+
+* `terminal.integrated.defaultProfile.windows`
+
+### Performance Tuning
+
+If the extension still fails or if it works fine but you want it to be *as fast as possible* you can adjust the `rustup-reminder.Delay` setting. The extension should roughly take 3-4 times that value to run. You can inspect the code on GitHub to see why this is needed.
+
+Follow the following steps:
+1. Set `rustup-reminder.NotifyWhenUpToDate` to on (just for now).
+
+2. Close and Reopen VS code. Then open a Rust file.
+
+3. If you see a non-error notification, then you are good to go!
+
+While the extension fails, increase the value.
+
+If you want to speed up the extension, lower the value until (just before) the extension fails.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
-
 ### 1.0.0
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Initial release of RustUp Reminder.
