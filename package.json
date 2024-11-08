@@ -2,14 +2,34 @@
   "name": "rustup-reminder",
   "displayName": "RustUp Reminder",
   "description": "RustUp Reminder: Reminds you when a new stable version of Rust is out",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "publisher": "Tomer-Eliahu",
+  "author": {
+    "name": "Tomer Eliahu"
+  },
   "engines": {
     "vscode": "^1.95.0"
   },
-  "categories": [
-    "Other"
-  ],
+
+
+  "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tomer-Eliahu/rustup-reminder.git"  
+  },
+  "homepage": "https://github.com/Tomer-Eliahu/rustup-reminder#readme",
+  
+  "galleryBanner": {
+    "color": "#1863a1",
+    "theme": "light"
+  },
+
+
+  "categories": ["Other"],
+  "keywords": ["rustup reminder", "rust", "reminder", "notification", "update"],
   "icon": "images/icon.png",
+  
+
   "activationEvents": ["onLanguage:rust"],
   "main": "./out/extension.js",
   "contributes": {

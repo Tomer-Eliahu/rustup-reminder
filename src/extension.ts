@@ -108,9 +108,8 @@ export function run(sleep: () => void) {
 	terminal.sendText(finished_execution_command, true);
 
 	//CRITICAL: Note that we *MUST* wait here. If we do not, since using terminal.sendText doesn't wait
-	//for the execution of the commands to finish, we might read the file before it even exits or is updated as
+	//for the execution of the commands to finish, we might read the file before it even exists or is updated as
 	//part of this run.
-	//On my machine the minimum wait needed is about 700 miliseconds
 	sleep();
 
 	//We open the file		
@@ -279,9 +278,8 @@ export function run_debug(sleep: () => void)
 	console.log(finished_execution_command);
 
 	//CRITICAL: Note that we *MUST* wait here. If we do not, since using sendText to the terminal doesn't wait
-	//for the execution of the commands to finish, we might read the file before it even exits or is updated as
+	//for the execution of the commands to finish, we might read the file before it even exists or is updated as
 	//part of this run.
-	//On my machine the minimum wait needed is about 700 miliseconds
 	sleep();
 
 
@@ -304,7 +302,7 @@ export function run_debug(sleep: () => void)
 		
 		//TEST MODIFICATION
 		//Since some of the GitHub CI tests install an *outdated* version of rust on purpose,
-		//that outdated version will be called something like 1.81-x86_64-pc-windows-msvc
+		//that outdated version will be uniquely called something like 1.81-x86_64-pc-windows-msvc
 		//As opposed to stable-x86_64-pc-windows-msvc. 
 		//We account for that here in the run_debug function only.
 		const stable_arr = result_array.filter( 
