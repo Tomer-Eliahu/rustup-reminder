@@ -37,7 +37,7 @@ If the extension fails, you might need to set your default terminal profile to P
 
 ### Performance Tuning
 
-If the extension still fails or if it works fine but you want it to be *as fast as possible* you can adjust the `rustup-reminder.Delay` setting. The extension should roughly take 3-4 times that value to run. You can inspect the code on GitHub to see why this is needed.
+If the extension still fails or if it works fine but you want it to be *as fast as possible* you can adjust the `rustup-reminder.Delay` setting. The extension should roughly take 2-3 times that value to run. You can inspect the code on GitHub to see why this is needed.
 
 Follow the following steps:
 1. Set `rustup-reminder.NotifyWhenUpToDate` to on (just for now).
@@ -55,3 +55,7 @@ If you want to speed up the extension, lower the value until (just before) the e
 ### 1.0.0
 
 Initial release of RustUp Reminder.
+
+### 1.1.0
+
+Made the extension run a bit faster: It now runs in roughly 2-3 times the value of the `rustup-reminder.Delay` setting (down from 3-4 times).
