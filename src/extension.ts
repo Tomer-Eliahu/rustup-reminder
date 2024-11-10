@@ -69,18 +69,11 @@ export function run(sleep: () => void) {
 	});
 
 	//Changes the terminal to be powershell (if it was already powershell, it stays powershell)
-	if (process.platform === 'linux')
-	{
-		terminal.sendText("pwsh"); //on linux default shell we need a different keyword
-		sleep();
-		terminal.sendText("powershell"); //we run this in case the user changed their default shell
-	}
-	else
-	{
-		terminal.sendText("powershell");
-		sleep();
-		terminal.sendText("pwsh");
-	}
+	//We use 2 different keywords as on linux default shell we need a different keyword.
+	//This also accounts for the case a user changed their default shell.
+	//We also use a 2 command 1-liner as that saves us having to sleep here.
+	terminal.sendText("pwsh; powershell", true);
+	
 	sleep();//We have to wait for the shell to change. Otherwise our following commands won't be executed
 
 	const TempDir = tmpdir();
@@ -104,6 +97,9 @@ export function run(sleep: () => void) {
 	//And shell intergration is not a given.
 	//By appending a timestamped 'finished execution' message to the file we can verify the latest rustup check command has finished execution.
 	const timestamp = Date.now(); //CRITICAL: apparently this is so slow, that we do not need to sleep here
+	//And because it is so slow doing things this way is better than combining the write_command and finished_execution_command
+	//into a 1-liner command.
+
 	const finished_execution_command = `echo '\nRustUpReminder rustup check command finished ${timestamp}' | Out-File -FilePath ${FilePath} -Encoding utf8 -Append`;
 	terminal.sendText(finished_execution_command, true);
 
@@ -171,6 +167,8 @@ export function run(sleep: () => void) {
 			terminal.sendText('clear', true);
 
 			//We need to sleep so that the commands execute sequentially
+			//We do not use a a 1-liner "clear; rustup update -- stable" as
+			//we want the user to see the "rustup update -- stable" command was run on the terminal
 			sleep();
 
 			//Update stable Rust and potentially rustup itself.
@@ -231,18 +229,11 @@ export function run_debug(sleep: () => void)
 	
 
 	//Changes the terminal to be powershell (if it was already powershell, it stays powershell)
-	if (process.platform === 'linux')
-	{
-		terminal.sendText("pwsh"); //on linux default shell we need a different keyword
-		sleep();
-		terminal.sendText("powershell"); //we run this in case the user changed their default shell
-	}
-	else
-	{
-		terminal.sendText("powershell");
-		sleep();
-		terminal.sendText("pwsh");
-	}
+	//We use 2 different keywords as on linux default shell we need a different keyword.
+	//This also accounts for the case a user changed their default shell.
+	//We also use a 2 command 1-liner as that saves us having to sleep here.
+	terminal.sendText("pwsh; powershell", true);
+	
 	sleep();//We have to wait for the shell to change. Otherwise our following commands won't be executed
 	
 	const TempDir = tmpdir();
@@ -273,6 +264,8 @@ export function run_debug(sleep: () => void)
 	const write_command = `rustup check | Out-File -FilePath ${FilePath} -Encoding utf8`;
 	terminal.sendText(write_command, true);
 	const timestamp = Date.now();//CRITICAL: apparently this is so slow, that we do not need to sleep here
+	//And because it is so slow doing things this way is better than combining the write_command and finished_execution_command
+	//into a 1-liner command.
 	const finished_execution_command = `echo '\nRustUpReminder rustup check command finished ${timestamp}' | Out-File -FilePath ${FilePath} -Encoding utf8 -Append`;
 	terminal.sendText(finished_execution_command, true);
 	console.log(finished_execution_command);
@@ -368,6 +361,8 @@ export function run_debug(sleep: () => void)
 			terminal.sendText('clear', true);
  
 			//We need to sleep so that the commands execute sequentially
+			//We do not use a a 1-liner "clear; rustup update -- stable" as
+			//we want the user to see the "rustup update -- stable" command was run on the terminal
 			sleep();
 
 			//Update stable Rust and potentially rustup itself.

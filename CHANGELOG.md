@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0]
 
-## [Version 1.0.0]
+### Changed
+
+- Made the extension run a bit faster: It now runs in roughly 2-3 times the value of the `rustup-reminder.Delay` setting (down from 3-4 times).
+
+## [1.0.0]
 
 - Initial release
