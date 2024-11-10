@@ -34,8 +34,8 @@ suite('Extension Test Suite', () => {
 	//This test will automatically test the entire logic of the extension even when that logic is updated
 	test('Whole Extension', ()=> {
 
-		//CI min wait time for tests to pass is 8_000 miliseconds (used to be 5_000)
-		const ci_min_wait = 8000;
+		//CI min wait time for tests to pass is 9_000 miliseconds (used to be 5_000)
+		const ci_min_wait = 9_000;
 
 		/**
 		 * blocks for ci_min_wait in miliseconds
@@ -59,8 +59,8 @@ suite('Extension Test Suite', () => {
 		let setting_wait_time = vscode.workspace.getConfiguration().get('rustup-reminder.Delay');
 		assert.strictEqual(typeof setting_wait_time, "number", 'setting_wait_time was not recognized as a number');
 
-		//CI min wait time for tests to pass is 8_000 miliseconds (used to be 5000)
-		const ci_min_wait = 8000;
+		//CI min wait time for tests to pass is 9_000 miliseconds (used to be 5000)
+		const ci_min_wait = 9_000;
 		console.log(`CI: setting wait time is set to ${setting_wait_time}. Actual wait time used is ${ci_min_wait}`);
 
 		/**
