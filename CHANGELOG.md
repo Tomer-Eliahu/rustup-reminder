@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0]
+
+### Changed
+
+- Extension no longer requires PowerShell to be installed.
+
+- Extension now runs substantially faster.
+
+### Removed
+
+- `rustup-reminder.Delay` setting.
+
 ## [1.1.0]
 
 ### Changed
