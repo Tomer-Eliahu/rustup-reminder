@@ -4,6 +4,7 @@ import * as assert from 'assert';
 // as well as import your extension to test it
 import * as vscode from 'vscode';
 import {run, run_debug} from './../extension';
+import { execSync } from 'child_process';
 
 suite('Extension Test Suite', () => {
 	vscode.window.showInformationMessage('Start all tests.');
@@ -31,52 +32,26 @@ suite('Extension Test Suite', () => {
 		terminal.dispose();
 	});
 
+	//If this test fails (uncaught exception), that means the extension can't be run on the tested platform
+	test('Create subprocess', () => {
+		
+		const result = execSync('echo hello', {encoding: 'utf-8', windowsHide: true} ).trim();
+		assert.strictEqual(result, "hello");
+
+
+	});
+
 	//This test will automatically test the entire logic of the extension even when that logic is updated
 	test('Whole Extension', ()=> {
 
-		//CI min wait time for tests to pass is 9_000 miliseconds (used to be 5_000)
-		const ci_min_wait = 9_000;
+		run();
 
-		/**
-		 * blocks for ci_min_wait in miliseconds
-		 */
-		function sleep() {
-			const intial_timestamp = Date.now();
-			let current_time = Date.now();
-			while ( (current_time- intial_timestamp ) < ci_min_wait)
-			{
-				current_time = Date.now();
-			}
-	
-		}
-	
-		run(sleep);
 	});
 
 
 	test('Whole Extension with addtional asserts and logs', ()=> {
-		
-		let setting_wait_time = vscode.workspace.getConfiguration().get('rustup-reminder.Delay');
-		assert.strictEqual(typeof setting_wait_time, "number", 'setting_wait_time was not recognized as a number');
 
-		//CI min wait time for tests to pass is 9_000 miliseconds (used to be 5000)
-		const ci_min_wait = 9_000;
-		console.log(`CI: setting wait time is set to ${setting_wait_time}. Actual wait time used is ${ci_min_wait}`);
-
-		/**
-		 * blocks for ci_min_wait in miliseconds
-		 */
-		function sleep() {
-			const intial_timestamp = Date.now();
-			let current_time = Date.now();
-			while ( (current_time- intial_timestamp ) < ci_min_wait)
-			{
-				current_time = Date.now();
-			}
-
-		}
-
-		run_debug(sleep);
+		run_debug();
 
 		//Note since run_debug() potentially returns when stable rust is starting to update
 		//We need to wait here for rust to update so that all the GitHub CI tests pass
@@ -90,7 +65,6 @@ suite('Extension Test Suite', () => {
 
 		}
 		wait_finish_upate(1000 * 30); // wait 30 seconds
-
 
 	});
 
