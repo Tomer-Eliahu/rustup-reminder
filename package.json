@@ -2,7 +2,7 @@
   "name": "rustup-reminder",
   "displayName": "RustUp Reminder",
   "description": "Reminds you when a new stable version of Rust is out",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "publisher": "Tomer-Eliahu",
   "author": {
     "name": "Tomer Eliahu"

@@ -4,7 +4,10 @@ import * as assert from 'assert';
 // as well as import your extension to test it
 import * as vscode from 'vscode';
 import {run, run_debug} from './../extension';
-import { execSync } from 'child_process';
+import { promisify } from 'node:util';
+// eslint-disable-next-line @typescript-eslint/naming-convention
+import child_process from 'node:child_process';
+
 
 suite('Extension Test Suite', () => {
 	vscode.window.showInformationMessage('Start all tests.');
@@ -33,11 +36,11 @@ suite('Extension Test Suite', () => {
 	});
 
 	//If this test fails (uncaught exception), that means the extension can't be run on the tested platform
-	test('Create subprocess', () => {
-		
-		const result = execSync('echo hello', {encoding: 'utf-8', windowsHide: true} ).trim();
+	test('Create subprocess', async () => {
+		 
+		const exec = promisify(child_process.exec);
+		const result = (await exec('echo hello', {encoding: 'utf-8', windowsHide: true} )).stdout.trim();
 		assert.strictEqual(result, "hello");
-
 
 	});
 
@@ -49,9 +52,10 @@ suite('Extension Test Suite', () => {
 	});
 
 
-	test('Whole Extension with addtional asserts and logs', ()=> {
+	test('Whole Extension with addtional asserts and logs', async ()=> {
 
-		run_debug();
+		//We must await here.
+		await run_debug();
 
 		//Note since run_debug() potentially returns when stable rust is starting to update
 		//We need to wait here for rust to update so that all the GitHub CI tests pass
