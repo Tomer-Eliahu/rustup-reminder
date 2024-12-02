@@ -45,9 +45,10 @@ suite('Extension Test Suite', () => {
 	});
 
 	//This test will automatically test the entire logic of the extension even when that logic is updated
-	test('Whole Extension', ()=> {
+	test('Whole Extension', async ()=> {
 
-		run();
+		//We must await here or return run() to make sure run is fully tested (run to completion).
+		return run();
 
 	});
 
