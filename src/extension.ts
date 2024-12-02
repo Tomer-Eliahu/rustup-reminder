@@ -3,7 +3,9 @@
 import * as vscode from 'vscode';
 
 //Other Imports
-import { execSync } from 'child_process';
+import { promisify } from 'node:util';
+// eslint-disable-next-line @typescript-eslint/naming-convention
+import child_process from 'node:child_process';
 import * as assert from 'assert';
 
 
@@ -28,10 +30,12 @@ export function activate(context: vscode.ExtensionContext) {
 /**
  * Runs RustUp Reminder
  */
-export function run() {
+export async function run() {
+	//Note we utilize async-await so that this extension activates concurrently with other VS Code extensions.
 
-	//run rustup check and get the output as a string
-	const result = execSync('rustup check', {encoding: 'utf-8', windowsHide: true} ).trim();
+	//run rustup check and get the output as a string (we handle potential errors from this below)
+	const exec = promisify(child_process.exec);
+	const result = (await exec('rustup check', {encoding: 'utf-8', windowsHide: true} )).stdout.trim();
 	let result_array = result.split('\n'); //Note this doesn't impact result
 
 	let no_error = true; //if there are (certain) errors during execution, then we want to output a different message to the user
@@ -119,13 +123,14 @@ export function deactivate() {}
 
 
 //For debugging purposes only (it is also used in a CI test)
-export function run_debug()
+export async function run_debug()
 {
 	console.log(`This platform is ${process.platform}`);
 
-	//run rustup check and get the output as a string
-	const result = execSync('rustup check', {encoding: 'utf-8', windowsHide: true} ).trim();
-	console.log(`the results of execsync are: \n${result}`);
+	//run rustup check and get the output as a string (we handle potential errors from this below)
+	const exec = promisify(child_process.exec);
+	const result = (await exec('rustup check', {encoding: 'utf-8', windowsHide: true} )).stdout.trim();
+	console.log(`the result of exec is: \n${result}`);
 	let result_array = result.split('\n'); //Note this doesn't impact result (result will still be the full file contents)
 
 	let no_error = true; //if there is an error during execution, then we want to output a different message to the user
