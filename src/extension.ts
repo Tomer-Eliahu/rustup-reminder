@@ -35,7 +35,7 @@ export async function run() {
 
 	//run rustup check and get the output as a string (we handle potential errors from this below)
 	const exec = promisify(child_process.exec);
-	const result = (await exec('rustup check', {encoding: 'utf-8', windowsHide: true} )).stdout.trim();
+	const result = (await exec('rustup check', {encoding: 'utf-8', windowsHide: true} )).stdout.trim().toLowerCase();
 	let result_array = result.split('\n'); //Note this doesn't impact result
 
 	let no_error = true; //if there are (certain) errors during execution, then we want to output a different message to the user
@@ -46,13 +46,14 @@ export async function run() {
 	//Note: We are checking for the output we expect based on the following file (see these specific tests for reference):
 	//https://github.com/rust-lang/rustup/blob/708ffd6aeaa84d291d2a16cfd99bb45ae7e1e575/tests/suite/cli_exact.rs#L160 ,
 	//https://github.com/rust-lang/rustup/blob/708ffd6aeaa84d291d2a16cfd99bb45ae7e1e575/tests/suite/cli_exact.rs#L179.
+	//Note that as we made the result lower case above, we just care about the words themselves.
 	
 	const stable_arr = result_array.filter( (line: string) => {return line.startsWith("stable");} );
 	if (stable_arr.length === 1) //There should be exactly one line that begins with stable
 	{
-		update_available = stable_arr[0].includes("Update available");
+		update_available = stable_arr[0].includes("update available");
 
-		if(!update_available && !(stable_arr[0].includes("Up to date")) )
+		if(!update_available && !(stable_arr[0].includes("up to date")) )
 		{
 			no_error = false;
 			errors = "The precise output formatting of rustup check appears to have changed";
@@ -129,7 +130,7 @@ export async function run_debug()
 
 	//run rustup check and get the output as a string (we handle potential errors from this below)
 	const exec = promisify(child_process.exec);
-	const result = (await exec('rustup check', {encoding: 'utf-8', windowsHide: true} )).stdout.trim();
+	const result = (await exec('rustup check', {encoding: 'utf-8', windowsHide: true} )).stdout.trim().toLowerCase();
 	console.log(`the result of exec is: \n${result}`);
 	let result_array = result.split('\n'); //Note this doesn't impact result (result will still be the full file contents)
 
@@ -140,6 +141,7 @@ export async function run_debug()
 	//Note: We are checking for the output we expect based on the following file (see these specific tests for reference):
 	//https://github.com/rust-lang/rustup/blob/708ffd6aeaa84d291d2a16cfd99bb45ae7e1e575/tests/suite/cli_exact.rs#L160 ,
 	//https://github.com/rust-lang/rustup/blob/708ffd6aeaa84d291d2a16cfd99bb45ae7e1e575/tests/suite/cli_exact.rs#L179.
+	//Note that as we made the result lower case above, we just care about the words themselves.
 	
 	//TEST MODIFICATION
 	//Since some of the GitHub CI tests install an *outdated* version of rust on purpose,
@@ -159,10 +161,10 @@ export async function run_debug()
 		//Make GitHub CI tests trigger update
 		//We need this because rustup check reports outdated versions of rust that we installed on purpose
 		//like 1.81-x86_64-pc-windows-msvc as up to date.
-		update_available = stable_arr[0].includes("Update available") || 
+		update_available = stable_arr[0].includes("update available") || 
 		stable_arr[0].includes("1.81.0 (eeb90cda1 2024-09-04)");
 
-		if(!update_available && !(stable_arr[0].includes("Up to date")) )
+		if(!update_available && !(stable_arr[0].includes("up to date")) )
 		{
 			no_error = false;
 			errors = "The precise output formatting of rustup check appears to have changed";
@@ -176,7 +178,7 @@ export async function run_debug()
 	
 
 	//TEST ASSERTION ADDED
-	assert.strictEqual(no_error, true, `no_errors was false. erros is ${errors}`);
+	assert.strictEqual(no_error, true, `no_errors was false. errors is ${errors}`);
 
 	//We get the values the user set for the extension settings
 	const settings = vscode.workspace.getConfiguration();

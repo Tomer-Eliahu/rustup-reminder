@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.1]
+
+### Fixed
+
+- Extension now correctly checks if Rust stable is up to date against the new (slightly different) output formatting of rustup check.
+
 ## [2.1.0]
 
 ### Changed
