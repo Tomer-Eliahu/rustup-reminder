@@ -8,13 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout #Clones the repository to the runner
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: rustup toolchain install
       uses: dtolnay/rust-toolchain@stable
     - name: Install Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
-        node-version: 18.x
+        node-version: 24
     - run: npm install
     - shell: pwsh
       run: pwsh #Using powershell works on macOS but it doesn't on linux. Trying pwsh -- Update: pwsh works!
