@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.2]
+
+### Fixed
+
+- Adjust to new rustup check exit code changes made in rustup v1.29.0.
+
 ## [2.1.1]
 
 ### Fixed
