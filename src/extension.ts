@@ -6,6 +6,7 @@ import * as vscode from 'vscode';
 import { promisify } from 'node:util';
 // eslint-disable-next-line @typescript-eslint/naming-convention
 import child_process from 'node:child_process';
+import { ExecException } from 'child_process';
 import * as assert from 'assert';
 
 
@@ -35,7 +36,25 @@ export async function run() {
 
 	//run rustup check and get the output as a string (we handle potential errors from this below)
 	const exec = promisify(child_process.exec);
-	const result = (await exec('rustup check', {encoding: 'utf-8', windowsHide: true} )).stdout.trim().toLowerCase();
+	let out;
+
+	try {
+		const { stdout } = await exec('rustup check', { encoding: 'utf-8', windowsHide: true });
+		out = stdout;
+	} catch (err: unknown) {
+		const error = err as ExecException;
+		//If code is 100, updates are available. We grab the stdout from the error object.
+		if (error.code === 100 && error.stdout) {
+			out = error.stdout;
+		} else {
+			//Handle actual crashes (e.g. rustup not installed)
+			//Report to the user we encoutered errors and detail them
+			const crash_err = `Error running RustUp Reminder:\nRustup check failed:${error.message}`;
+			vscode.window.showErrorMessage(crash_err);
+			return;
+		}
+	}
+	const result = out.trim().toLowerCase();
 	let result_array = result.split('\n'); //Note this doesn't impact result
 
 	let no_error = true; //if there are (certain) errors during execution, then we want to output a different message to the user
@@ -130,7 +149,25 @@ export async function run_debug()
 
 	//run rustup check and get the output as a string (we handle potential errors from this below)
 	const exec = promisify(child_process.exec);
-	const result = (await exec('rustup check', {encoding: 'utf-8', windowsHide: true} )).stdout.trim().toLowerCase();
+	let out;
+
+	try {
+		const { stdout } = await exec('rustup check', { encoding: 'utf-8', windowsHide: true });
+		out = stdout;
+	} catch (err: unknown) {
+		const error = err as ExecException;
+		//If code is 100, updates are available. We grab the stdout from the error object.
+		if (error.code === 100 && error.stdout) {
+			out = error.stdout;
+		} else {
+			//Handle actual crashes (e.g. rustup not installed)
+			//Report to the user we encoutered errors and detail them
+			const crash_err = `Error running RustUp Reminder:\nRustup check failed:${error.message}`;
+			vscode.window.showErrorMessage(crash_err);
+			return;
+		}
+	}
+	const result = out.trim().toLowerCase();
 	console.log(`the result of exec is: \n${result}`);
 	let result_array = result.split('\n'); //Note this doesn't impact result (result will still be the full file contents)
 
