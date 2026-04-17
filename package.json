@@ -10,50 +10,51 @@
   "engines": {
     "vscode": "^1.95.0"
   },
-
-
   "license": "SEE LICENSE IN LICENSE",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Tomer-Eliahu/rustup-reminder.git"  
+    "url": "https://github.com/Tomer-Eliahu/rustup-reminder.git"
   },
   "homepage": "https://github.com/Tomer-Eliahu/rustup-reminder#readme",
-  
   "galleryBanner": {
     "color": "#1863a1",
     "theme": "light"
   },
-
-
-  "categories": ["Other"],
-  "keywords": ["rustup reminder", "rust", "reminder", "notification", "update"],
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "rustup reminder",
+    "rust",
+    "reminder",
+    "notification",
+    "update"
+  ],
   "icon": "images/icon.png",
-  
-
-  "activationEvents": ["onLanguage:rust"],
+  "activationEvents": [
+    "onLanguage:rust"
+  ],
   "main": "./out/extension.js",
   "contributes": {
-    
-    "configuration": [{
+    "configuration": [
+      {
         "title": "RustUp Reminder",
         "properties": {
           "rustup-reminder.NotifyWhenUpToDate": {
-              "markdownDescription": "Whether to *also* notify you if your stable Rust version is up to date. The default is to only notify you if there is an update available.",
-              "default": false,
-              "type": "boolean",
-              "order": 0
+            "markdownDescription": "Whether to *also* notify you if your stable Rust version is up to date. The default is to only notify you if there is an update available.",
+            "default": false,
+            "type": "boolean",
+            "order": 0
           },
           "rustup-reminder.UpdateWhenPossible": {
-              "markdownDescription": "Whether to automatically update your stable Rust version when an update is available. This is done by running 'rustup update -- stable' (updates the stable version and potentially rustup itself). The default is to not auto-update.",
-              "default": false,
-              "type": "boolean",
-              "order": 1
+            "markdownDescription": "Whether to automatically update your stable Rust version when an update is available. This is done by running 'rustup update -- stable' (updates the stable version and potentially rustup itself). The default is to not auto-update.",
+            "default": false,
+            "type": "boolean",
+            "order": 1
           }
-      }
+        }
       }
     ]
-    
-    
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -64,14 +65,14 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.95.0",
-    "@types/mocha": "^10.0.9",
-    "@types/node": "20.x",
-    "@typescript-eslint/eslint-plugin": "^8.10.0",
-    "@typescript-eslint/parser": "^8.7.0",
-    "eslint": "^9.13.0",
-    "typescript": "^5.6.3",
-    "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^25.6.0",
+    "@types/vscode": "^1.116.0",
+    "@typescript-eslint/eslint-plugin": "^8.58.2",
+    "@typescript-eslint/parser": "^8.58.2",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^10.2.0",
+    "typescript": "^6.0.3"
   }
 }
