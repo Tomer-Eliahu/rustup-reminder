@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout #Clones the repository to the runner
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
       #uninstall stable rust (GitHub runners come with latest stable rust installed).
     - shell: bash

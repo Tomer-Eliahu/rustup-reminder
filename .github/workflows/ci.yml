@@ -20,13 +20,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout #Clones the repository to the runner
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
     - name: rustup toolchain install
       uses: dtolnay/rust-toolchain@stable
     - name: Install Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
-        node-version: 18.x
+        node-version: 24
     - run: npm install
     - run: xvfb-run -a npm test
       if: runner.os == 'Linux'
@@ -47,7 +47,7 @@ jobs:
       STABLE_AFTER_EXTENSION: false
     steps:
     - name: Checkout #Clones the repository to the runner
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
       #uninstall stable rust (GitHub runners come with latest stable rust installed).
     - run: rustup toolchain uninstall stable
@@ -93,9 +93,9 @@ jobs:
 
     #Install Node and run our tests
     - name: Install Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v6
       with:
-        node-version: 18.x
+        node-version: 24
     - run: npm install
     - run: xvfb-run -a npm test
       if: runner.os == 'Linux'
